@@ -1,0 +1,6 @@
+@signa_HostAddress = http://localhost:5043
+
+GET {{signa_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
