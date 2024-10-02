@@ -9,39 +9,54 @@ namespace signa.Repositories;
 
 public class UserRepository
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext context;
+    private readonly IMapper mapper;
 
-    public UserRepository(ApplicationDbContext context)
+    public UserRepository(ApplicationDbContext context, IMapper mapper)
     {
-        _context = context;
+        this.context = context;
+        this.mapper = mapper;
     }
 
-    public async Task<List<User>> GetUsersAsync()
+    public async Task<Guid> Create(UserEntity userEntity)
     {
-        var usersEntities = await _context.Users
-            .AsNoTracking()
-            .ToListAsync();
-        //TODO: вынести маппер в отдельный класс чтобы не создавать для каждого репрозитория MapperConfiguration
-        var config = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<UserEntity, User>();
-        });
-        
-        var users = usersEntities
-            .Select(b => config.CreateMapper().Map<UserEntity, User>(b)).ToList();
-        return users;
-    }
-
-    public async Task<Guid> Create(CreateUserDto user)
-    {
-        var config = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<CreateUserDto, UserEntity>();
-        });
-        var userEntity = config.CreateMapper().Map<CreateUserDto, UserEntity>(user);
         userEntity.Id = Guid.NewGuid();
-        await _context.Users.AddAsync(userEntity);
-        await _context.SaveChangesAsync();
+        userEntity.CreatedAt = DateTime.Now;
+        userEntity.UpdatedAt = userEntity.CreatedAt;
+        await context.Users.AddAsync(userEntity);
+        await context.SaveChangesAsync();
         return userEntity.Id;
+    }
+
+    public async Task<UserEntity> GetById(Guid userId)
+    {
+        return context.Users
+            .AsNoTracking()
+            .Where(u => u.Id == userId)
+            .FirstOrDefault();
+    }
+
+    public async Task<Guid> Update(Guid id, UpdateUserDto updateUserDto)
+    {
+        await context.Users
+            .Where(u => u.Id == id)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(b => b.LastName, updateUserDto.LastName)
+                .SetProperty(b => b.PhoneNumber, updateUserDto.PhoneNumber)
+                .SetProperty(b => b.Email, updateUserDto.Email)
+                .SetProperty(b => b.Password, updateUserDto.Password)
+                .SetProperty(b => b.GroupNumber, updateUserDto.GroupNumber)
+                .SetProperty(b => b.PhotoLink, updateUserDto.PhotoLink));
+        await context.SaveChangesAsync();
+        return id;
+    }
+
+    public async Task<Guid> Delete(Guid id)
+    {
+        await context.Users
+            .Where(u => u.Id == id)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(b => b.IsDeleted, true));
+        return id;
     }
 }
