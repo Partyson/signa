@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
 using signa.Entities;
+using signa.Interfaces;
 using signa.Models;
 using signa.Repositories;
 
@@ -11,10 +12,10 @@ namespace signa.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly UserRepository userRepository;
+        private readonly IUserRepository userRepository;
         private readonly IMapper mapper;
 
-        public UserController(UserRepository userRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository, IMapper mapper)
         {
             this.userRepository = userRepository;
             this.mapper = mapper;
@@ -24,7 +25,7 @@ namespace signa.Controllers
         public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
             var userEntity = mapper.Map<CreateUserDto, UserEntity>(user);
-            var userId = userRepository.Create(userEntity);
+            var userId = await userRepository.Create(userEntity);
             return Ok(userId);
         }
         

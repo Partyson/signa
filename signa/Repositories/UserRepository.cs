@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using signa.DataAccess;
 using signa.Dto;
 using signa.Entities;
+using signa.Interfaces;
 using signa.Models;
 
 namespace signa.Repositories;
 
-public class UserRepository
+public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext context;
     private readonly IMapper mapper;
