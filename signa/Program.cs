@@ -1,9 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using signa.DataAccess;
-using signa.Dto;
-using signa.Entities;
 using signa.Interfaces;
-using signa.Models;
 using signa.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,13 +19,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseMySql(connectionString,
         ServerVersion.AutoDetect(connectionString));
-});
-
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.CreateMap<UserEntity, UserResponseDto>();
-    cfg.CreateMap<UserEntity, User>();
-    cfg.CreateMap<CreateUserDto, UserEntity>();
 });
 
 var app = builder.Build();

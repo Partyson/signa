@@ -1,10 +1,8 @@
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
 using signa.Entities;
 using signa.Interfaces;
-using signa.Models;
-using signa.Repositories;
 
 namespace signa.Controllers
 {
@@ -13,18 +11,16 @@ namespace signa.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository userRepository;
-        private readonly IMapper mapper;
 
-        public UserController(IUserRepository userRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
-            this.mapper = mapper;
         }
         
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
-            var userEntity = mapper.Map<CreateUserDto, UserEntity>(user);
+            var userEntity = user.Adapt<UserEntity>();
             var userId = await userRepository.Create(userEntity);
             return Ok(userId);
         }
@@ -35,7 +31,7 @@ namespace signa.Controllers
             var userEntity = userRepository.GetById(userId).Result;
             if (userEntity == null)
                 return NotFound();
-            var userResponseDto = mapper.Map<UserEntity, UserResponseDto>(userEntity);
+            var userResponseDto = userEntity.Adapt<UserResponseDto>();
             return Ok(userResponseDto);
         }
 

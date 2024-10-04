@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using signa.DataAccess;
 using signa.Dto;
 using signa.Entities;
@@ -11,12 +10,10 @@ namespace signa.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext context;
-    private readonly IMapper mapper;
 
-    public UserRepository(ApplicationDbContext context, IMapper mapper)
+    public UserRepository(ApplicationDbContext context)
     {
         this.context = context;
-        this.mapper = mapper;
     }
 
     public async Task<Guid> Create(UserEntity userEntity)
