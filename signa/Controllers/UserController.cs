@@ -21,7 +21,7 @@ namespace signa.Controllers
         public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
             var userEntity = user.Adapt<UserEntity>();
-            var userId = await userRepository.Create(userEntity);
+            var userId = await userRepository.Create(userEntity, user.Password);
             return Ok(userId);
         }
         

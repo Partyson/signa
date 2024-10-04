@@ -16,5 +16,5 @@ public class UserResponseDto
     
     public string? PhoneNumber { get; set; }
     
-    public string? PhotoLink { get; set; }   
+    public string? PhotoLink { get; set; }
 }

@@ -1,16 +1,18 @@
-﻿namespace signa.Models;
+﻿using System.Security.Claims;
+using System.Text;
+
+namespace signa.Models;
 
 public class User
 {
     public const int MAX_FIRST_NAME_LENGTH = 15;
     public const int MAX_LAST_NAME_LENGTH = 15;
     public const int MAX_PATRONYMIC_LENGTH = 15;
-    public const int MAX_GROUP_NUMBER_LENGTH = 9;
-    public const int MAX_PHONE_NUMBER_LENGTH = 12;
     public const int VARCHAR_LIMIT = 255;
         
     public User (Guid id, string firstName, string lastName,
-        string patronymic, string gender, string email, string password, string groupNumber, string? phoneNumber = null)
+        string patronymic, string gender, string email, string groupNumber,
+        string passwordHash, string passwordSalt, string? phoneNumber = null)
     {
         Id = id;
         FirstName = firstName;
@@ -19,8 +21,9 @@ public class User
         Gender = gender;
         Email = email;
         PhoneNumber = phoneNumber;
-        Password = password;
         GroupNumber = groupNumber;
+        PasswordHash = passwordHash;
+        PasswordSalt = passwordSalt;
         CreatedAt = DateTime.Now;
         UpdatedAt = CreatedAt;
     }
@@ -40,7 +43,9 @@ public class User
     
     public string? PhoneNumber { get; set; }
     
-    public string Password { get; set; }
+    public string PasswordHash { get; set; }
+    
+    public string PasswordSalt { get; set; }
     
     public DateTime CreatedAt { get; set; }
     
@@ -53,4 +58,5 @@ public class User
     public bool IsOrganized { get; set; }
     
     public string? PhotoLink { get; set; }
+    
 }

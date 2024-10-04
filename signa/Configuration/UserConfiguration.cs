@@ -29,9 +29,5 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(x => x.Email)
             .HasMaxLength(User.VARCHAR_LIMIT)
             .IsRequired();
-        
-        builder.Property(x => x.Password)
-            .HasMaxLength(User.VARCHAR_LIMIT)
-            .IsRequired();
     }
 }
