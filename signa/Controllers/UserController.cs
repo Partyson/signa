@@ -1,9 +1,6 @@
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
-using signa.Entities;
 using signa.Interfaces;
-using signa.Services;
 
 namespace signa.Controllers
 {
@@ -11,9 +8,9 @@ namespace signa.Controllers
     [Route("user")]
     public class UserController : ControllerBase
     {
-        private readonly UsersService usersService;
+        private readonly IUsersService usersService;
 
-        public UserController(UsersService usersService)
+        public UserController(IUsersService usersService)
         {
             this.usersService = usersService;
         }

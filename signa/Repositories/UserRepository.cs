@@ -39,7 +39,8 @@ public class UserRepository : IUserRepository
                 .SetProperty(b => b.Email, newUserEntity.Email)
                 .SetProperty(b => b.PasswordSalt, newUserEntity.PasswordSalt)
                 .SetProperty(b => b.PasswordHash, newUserEntity.PasswordHash)
-                .SetProperty(b => b.PhotoLink, newUserEntity.PhotoLink));
+                .SetProperty(b => b.PhotoLink, newUserEntity.PhotoLink)
+                .SetProperty(b => b.UpdatedAt, DateTime.Now));
         await context.SaveChangesAsync();
         return newUserEntity.Id;
     }

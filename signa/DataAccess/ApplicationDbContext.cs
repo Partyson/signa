@@ -3,11 +3,9 @@ using signa.Entities;
 
 namespace signa.DataAccess;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-    }
-    
     public DbSet<UserEntity> Users { get; set; }
+    
+    public DbSet<TournamentEntity> Tournaments { get; set; }
 }
