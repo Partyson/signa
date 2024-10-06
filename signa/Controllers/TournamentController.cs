@@ -23,10 +23,17 @@ namespace signa.Controllers
         }
         
         [HttpGet("{tournamentId}")]
-        public async Task<ActionResult<UserResponseDto>> Get(Guid tournamentId)
+        public async Task<ActionResult<TournamentResponseDto>> Get([FromRoute] Guid tournamentId)
         {
             var tournamentResponse = await tournamentsService.GetTournament(tournamentId);
             return tournamentResponse is null ? NotFound() : Ok(tournamentResponse);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<TournamentResponseDto>>> GetAll()
+        {
+            var tournaments = await tournamentsService.GetAllTournaments();
+            return Ok(tournaments);
         }
 
         [HttpPatch("{tournamentId}")]

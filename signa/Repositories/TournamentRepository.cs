@@ -28,6 +28,14 @@ public class TournamentRepository : ITournamentRepository
             .FirstOrDefault(t => t.Id == tournamentId));
     }
 
+    public async Task<List<TournamentEntity>> GetAll()
+    {
+        var tournamentsEntity = await context.Tournaments
+            .AsNoTracking()
+            .ToListAsync();
+        return tournamentsEntity;
+    }
+
     public async Task<Guid> Update(TournamentEntity newTournamentEntity)
     {
         await context.Tournaments

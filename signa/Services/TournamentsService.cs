@@ -21,6 +21,12 @@ public class TournamentsService : ITournamentsService
         return tournamentEntity.Adapt<TournamentResponseDto>();
     }
 
+    public async Task<List<TournamentResponseDto>> GetAllTournaments()
+    {
+        var tournaments = await tournamentRepository.GetAll();
+        return tournaments.Adapt<List<TournamentResponseDto>>();
+    }
+
     public async Task<Guid> CreateTournament(CreateTournamentDto newTournament)
     {
         var tournamentEntity = newTournament.Adapt<TournamentEntity>();
