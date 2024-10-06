@@ -1,0 +1,18 @@
+﻿volumes:
+  db_data:
+
+services:
+  mysql:
+    container_name: mysql_db
+    image: mysql:8.0.22
+    restart: always
+    environment:
+      MYSQL_ROOT_HOST: localhost
+      MYSQL_ROOT_PASSWORD: 111
+      MYSQL_DATABASE: application_db
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: 111
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
