@@ -5,8 +5,8 @@ namespace signa.Interfaces;
 
 public interface IUserRepository
 {
-    Task<Guid> Create(UserEntity userEntity, string password);
-    Task<UserEntity> GetById(Guid userId);
-    Task<Guid> Update(Guid id, UpdateUserDto updateUserDto);
+    Task<Guid> Create(UserEntity userEntity);
+    Task<UserEntity?> Get(Guid userId);
+    Task<Guid> Update(UserEntity newUserEntity);
     Task<Guid> Delete(Guid id);
 }

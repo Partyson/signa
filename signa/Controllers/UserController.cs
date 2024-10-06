@@ -3,50 +3,47 @@ using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
 using signa.Entities;
 using signa.Interfaces;
+using signa.Services;
 
 namespace signa.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("user")]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository userRepository;
+        private readonly UsersService usersService;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(UsersService usersService)
         {
-            this.userRepository = userRepository;
+            this.usersService = usersService;
         }
         
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
-            var userEntity = user.Adapt<UserEntity>();
-            var userId = await userRepository.Create(userEntity, user.Password);
+            var userId = await usersService.CreateUser(user);
             return Ok(userId);
         }
         
         [HttpGet("{userId}")]
-        public async Task<ActionResult<UserResponseDto>> GetById(Guid userId)
+        public async Task<ActionResult<UserResponseDto>> Get(Guid userId)
         {
-            var userEntity = userRepository.GetById(userId).Result;
-            if (userEntity == null)
-                return NotFound();
-            var userResponseDto = userEntity.Adapt<UserResponseDto>();
-            return Ok(userResponseDto);
+            var userResponseDto =  await usersService.GetUser(userId);
+            return userResponseDto is null ? NotFound() : Ok(userResponseDto);
         }
 
         [HttpPatch("{userId}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
         {
-            await userRepository.Update(userId, user);
-            return Ok();
+            var id = await usersService.UpdateUser(userId, user);
+            return Ok(id);
         }
 
         [HttpDelete("{userId}")]
         public async Task<IActionResult> Delete(Guid userId)
         {
-            await userRepository.Delete(userId);
-            return Ok();
+            var deletedUserId = await usersService.DeleteUser(userId);
+            return Ok(deletedUserId);
         }
     }
 }

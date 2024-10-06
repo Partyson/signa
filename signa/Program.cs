@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using signa.DataAccess;
 using signa.Interfaces;
+using signa.Models;
 using signa.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddControllers();
+
+MappingConfig.RegisterMappings();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

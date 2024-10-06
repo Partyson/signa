@@ -16,40 +16,32 @@ public class UserRepository : IUserRepository
         this.context = context;
     }
 
-    public async Task<Guid> Create(UserEntity userEntity, string password)
+    public async Task<Guid> Create(UserEntity userEntity)
     {
-        userEntity.Id = Guid.NewGuid();
-        var newSalt = PasswordHasher.GenerateSalt();
-        userEntity.PasswordHash = PasswordHasher.HashPassword(password, newSalt);
-        userEntity.PasswordSalt = System.Text.Encoding.Default.GetString(newSalt);
-        userEntity.CreatedAt = DateTime.Now;
-        userEntity.UpdatedAt = userEntity.CreatedAt;
         await context.Users.AddAsync(userEntity);
         await context.SaveChangesAsync();
         return userEntity.Id;
     }
 
-    public async Task<UserEntity> GetById(Guid userId)
+    public Task<UserEntity?> Get(Guid userId)
     {
-        return context.Users
+        return Task.FromResult(context.Users
             .AsNoTracking()
-            .Where(u => u.Id == userId)
-            .FirstOrDefault();
+            .FirstOrDefault(u => u.Id == userId));
     }
 
-    public async Task<Guid> Update(Guid id, UpdateUserDto updateUserDto)
+    public async Task<Guid> Update(UserEntity newUserEntity)
     {
-        var newSalt = PasswordHasher.GenerateSalt();
         await context.Users
-            .Where(u => u.Id == id)
+            .Where(u => u.Id == newUserEntity.Id)
             .ExecuteUpdateAsync(s => s
-                .SetProperty(b => b.PhoneNumber, updateUserDto.PhoneNumber)
-                .SetProperty(b => b.Email, updateUserDto.Email)
-                .SetProperty(b => b.PasswordSalt, System.Text.Encoding.Default.GetString(newSalt))
-                .SetProperty(b => b.PasswordHash, PasswordHasher.HashPassword(updateUserDto.Password, newSalt))
-                .SetProperty(b => b.PhotoLink, updateUserDto.PhotoLink));
+                .SetProperty(b => b.PhoneNumber, newUserEntity.PhoneNumber)
+                .SetProperty(b => b.Email, newUserEntity.Email)
+                .SetProperty(b => b.PasswordSalt, newUserEntity.PasswordSalt)
+                .SetProperty(b => b.PasswordHash, newUserEntity.PasswordHash)
+                .SetProperty(b => b.PhotoLink, newUserEntity.PhotoLink));
         await context.SaveChangesAsync();
-        return id;
+        return newUserEntity.Id;
     }
 
     public async Task<Guid> Delete(Guid id)
