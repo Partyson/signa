@@ -17,7 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // todo перенести в appsetings.Deveploment.json
-const string connectionString = "server=127.0.0.1;Port=3306;user=root;password=gr5+*4nW-8Zp_bS;database=application_db;";
+const string connectionString = "server=localhost;Port=3306;user=dbuser;password=111;database=application_db;";
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseMySql(connectionString,
