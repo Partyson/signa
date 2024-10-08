@@ -53,7 +53,8 @@ public class TournamentRepository : ITournamentRepository
                 .SetProperty(b => b.EndRegistrationAt, newTournamentEntity.EndRegistrationAt)
                 .SetProperty(b => b.State, newTournamentEntity.State)
                 .SetProperty(b => b.RegulationLink, newTournamentEntity.RegulationLink)
-                .SetProperty(b => b.WithGroupStage, newTournamentEntity.WithGroupStage));
+                .SetProperty(b => b.WithGroupStage, newTournamentEntity.WithGroupStage)
+                .SetProperty(b => b.UpdatedAt, DateTime.Now));
         await context.SaveChangesAsync();
         return newTournamentEntity.Id;
     }
