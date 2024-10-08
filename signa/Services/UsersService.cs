@@ -3,7 +3,6 @@ using Mapster;
 using signa.Dto;
 using signa.Entities;
 using signa.Interfaces;
-using signa.Repositories;
 
 namespace signa.Services;
 
@@ -11,16 +10,24 @@ namespace signa.Services;
 public class UsersService : IUsersService
 {
     private readonly IUserRepository userRepository;
+    private readonly ILogger<UsersService> logger;
 
-    public UsersService(IUserRepository userRepository)
+    public UsersService(IUserRepository userRepository, ILogger<UsersService> logger)
     {
         this.userRepository = userRepository;
+        this.logger = logger;
     }
 
     public async Task<UserResponseDto?> GetUser(Guid userId)
     {
         var userEntity = await userRepository.Get(userId);
-         return userEntity.Adapt<UserResponseDto>();
+        if (userEntity != null)
+        {
+            logger.LogWarning($"User {userEntity.Id} is retrieved from database");
+            return userEntity.Adapt<UserResponseDto>();
+        }
+        logger.LogInformation("User not found from database");
+        return null;
     }
 
     public async Task<Guid> CreateUser(CreateUserDto newUser)
@@ -30,6 +37,7 @@ public class UsersService : IUsersService
         newUserEntity.CreatedAt = DateTime.Now;
         newUserEntity.UpdatedAt = newUserEntity.CreatedAt;
         var id = await userRepository.Create(newUserEntity);
+        logger.LogInformation($"User {newUserEntity.Id} created");
         return id;
     }
 
@@ -38,12 +46,14 @@ public class UsersService : IUsersService
         var newUserEntity = updateUser.Adapt<UserEntity>();
         newUserEntity.Id = userId;
         var updateUserId = await userRepository.Update(newUserEntity);
+        logger.LogInformation($"User {userId} updated");
         return updateUserId;
     }
 
     public async Task<Guid> DeleteUser(Guid userId)
     {
         var deletedUserId = await userRepository.Delete(userId);
+        logger.LogInformation($"User {userId} deleted");
         return deletedUserId;
     }
 }

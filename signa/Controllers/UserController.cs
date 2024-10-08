@@ -28,10 +28,7 @@ namespace signa.Controllers
         public async Task<ActionResult<UserResponseDto>> Get(Guid userId)
         {
             var userResponseDto =  await usersService.GetUser(userId);
-            if (userResponseDto != null) 
-                return Ok(userResponseDto);
-            logger.LogWarning("User not found");
-            return NotFound();
+            return userResponseDto != null ? Ok(userResponseDto) : NotFound();
         }
 
         [HttpPatch("{userId}")]
