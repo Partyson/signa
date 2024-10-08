@@ -1,9 +1,11 @@
-﻿using Mapster;
+﻿using JetBrains.Annotations;
+using Mapster;
 using signa.Dto;
 using signa.Entities;
 
 namespace signa.Models;
 
+[UsedImplicitly]
 public class MappingConfig
 {
     public static void RegisterMappings()

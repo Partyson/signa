@@ -1,8 +1,7 @@
 ﻿namespace signa.Entities;
 
-public class UserEntity
+public class UserEntity : BaseEntity
 {
-    public Guid Id { get; set; }
     public string FirstName { get; set; }
     
     public string LastName { get; set; }
@@ -23,9 +22,6 @@ public class UserEntity
     
     public string PasswordSalt { get; set; }
     
-    public DateTime CreatedAt { get; set; }
-    
-    public DateTime UpdatedAt { get; set; }
 
     public bool IsVerified { get; set; }
     
