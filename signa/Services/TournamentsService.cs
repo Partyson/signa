@@ -45,8 +45,9 @@ public class TournamentsService : ITournamentsService
         return updatedTournamentId;
     }
 
-    public Task<Guid> DeleteTournament(Guid tournamentId)
+    public async Task<Guid> DeleteTournament(Guid tournamentId)
     {
-        throw new NotImplementedException();
+        var id = await tournamentRepository.Delete(tournamentId);
+        return id;
     }
 }

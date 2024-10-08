@@ -42,5 +42,12 @@ namespace signa.Controllers
             var updatedTournamentId = await tournamentsService.UpdateTournament(tournamentId, tournament);
             return Ok(updatedTournamentId);
         }
+
+        [HttpDelete("{tournamentId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid tournamentId)
+        {
+            await tournamentsService.DeleteTournament(tournamentId);
+            return Ok(tournamentId);
+        }
     }
 }

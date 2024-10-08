@@ -58,4 +58,12 @@ public class TournamentRepository : ITournamentRepository
         await context.SaveChangesAsync();
         return newTournamentEntity.Id;
     }
+
+    public async Task<Guid> Delete(Guid tournamentId)
+    {
+        await context.Tournaments
+            .Where(t => t.Id == tournamentId)
+            .ExecuteDeleteAsync();
+        return tournamentId;
+    }
 }

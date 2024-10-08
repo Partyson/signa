@@ -9,10 +9,12 @@ namespace signa.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUsersService usersService;
+        private readonly ILogger<UserController> logger;
 
-        public UserController(IUsersService usersService)
+        public UserController(IUsersService usersService, ILogger<UserController> logger)
         {
             this.usersService = usersService;
+            this.logger = logger;
         }
         
         [HttpPost]
@@ -26,7 +28,10 @@ namespace signa.Controllers
         public async Task<ActionResult<UserResponseDto>> Get(Guid userId)
         {
             var userResponseDto =  await usersService.GetUser(userId);
-            return userResponseDto is null ? NotFound() : Ok(userResponseDto);
+            if (userResponseDto != null) 
+                return Ok(userResponseDto);
+            logger.LogWarning("User not found");
+            return NotFound();
         }
 
         [HttpPatch("{userId}")]
