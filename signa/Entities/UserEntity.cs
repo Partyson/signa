@@ -28,4 +28,6 @@ public class UserEntity : BaseEntity
     public bool IsDeleted { get; set; }
     
     public bool IsOrganized { get; set; }
+
+    public List<TeamEntity> Teams { get; set; } = [];
 }
