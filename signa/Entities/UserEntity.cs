@@ -1,6 +1,6 @@
 ﻿namespace signa.Entities;
 
-public class UserEntity : BaseEntity
+public class UserEntity(Guid id, DateTime createdAt) : BaseEntity(id, createdAt)
 {
     public string FirstName { get; set; }
     

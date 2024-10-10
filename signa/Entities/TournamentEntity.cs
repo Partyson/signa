@@ -1,6 +1,6 @@
 ﻿namespace signa.Entities;
 
-public class TournamentEntity : BaseEntity
+public class TournamentEntity(Guid id, DateTime createdAt) : BaseEntity(id, createdAt)
 {
     public string Title { get; set; }
     

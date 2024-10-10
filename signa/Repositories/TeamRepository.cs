@@ -17,11 +17,13 @@ public class TeamRepository : ITeamRepository
 
     public async Task<Guid> Create(CreateTeamDto newTeam)
     {
-        var teamEntity = new TeamEntity();
+        var teamEntity = new TeamEntity(new Guid(), DateTime.Now);
         teamEntity.Tournament = await context.Tournaments
             .FirstOrDefaultAsync(t => newTeam.TournamentId == t.Id);
+        
         foreach (var membersId in newTeam.MembersId)
             teamEntity.Members = teamEntity.Members.Append(await context.Users.FirstOrDefaultAsync(u => u.Id == membersId)).ToList();
+        
         teamEntity.Captain = await context.Users.FirstOrDefaultAsync(u => u.Id == newTeam.CaptainId);
         teamEntity.Title = newTeam.Title;
         await context.Teams.AddAsync(teamEntity);
@@ -33,6 +35,8 @@ public class TeamRepository : ITeamRepository
     {
         var team = await Task.FromResult(context.Teams
             .AsNoTracking()
+            .Include(t => t.Members)
+            .Include(t => t.Captain)
             .FirstOrDefault(t => t.Id == teamId));
         return team;
     }

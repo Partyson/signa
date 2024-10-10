@@ -24,6 +24,6 @@ public class MappingConfig
         TypeAdapterConfig<TeamEntity, TeamResponseDto>
             .NewConfig()
             .Map(dest => dest.Captain, src => src.Captain.Adapt<UserResponseDto>())
-            .Map(dest => dest.Members, src => src.Members.Adapt<UserResponseDto>());
+            .Map(dest => dest.Members, src => src.Members.Select(m => m.Adapt<UserResponseDto>()));
     }
 }
