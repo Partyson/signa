@@ -1,10 +1,11 @@
-﻿using signa.Entities;
+﻿using signa.Dto.team;
+using signa.Entities;
 
 namespace signa.Interfaces;
 
 public interface ITeamRepository
 {
-    Task<Guid> Create(TeamEntity teamEntity);
+    Task<Guid> Create(CreateTeamDto teamEntity);
     Task<TeamEntity?> Get(Guid teamId);
     Task<List<TeamEntity>> GetAll();
     Task<Guid> Update(TeamEntity newTeamEntity);

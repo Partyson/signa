@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
+using signa.Dto.team;
 using signa.Interfaces;
 
 namespace signa.Controllers
 {
     [ApiController]
-    [Route("{tournamentId}")]
+    [Route("teams")]
     public class TeamController : ControllerBase
     {
         private readonly ITeamsService teamsService;

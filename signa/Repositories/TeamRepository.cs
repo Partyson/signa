@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using signa.DataAccess;
+using signa.Dto.team;
 using signa.Entities;
 using signa.Interfaces;
 
@@ -14,8 +15,15 @@ public class TeamRepository : ITeamRepository
         this.context = context;
     }
 
-    public async Task<Guid> Create(TeamEntity teamEntity)
+    public async Task<Guid> Create(CreateTeamDto newTeam)
     {
+        var teamEntity = new TeamEntity();
+        teamEntity.Tournament = await context.Tournaments
+            .FirstOrDefaultAsync(t => newTeam.TournamentId == t.Id);
+        foreach (var membersId in newTeam.MembersId)
+            teamEntity.Members = teamEntity.Members.Append(await context.Users.FirstOrDefaultAsync(u => u.Id == membersId)).ToList();
+        teamEntity.Captain = await context.Users.FirstOrDefaultAsync(u => u.Id == newTeam.CaptainId);
+        teamEntity.Title = newTeam.Title;
         await context.Teams.AddAsync(teamEntity);
         await context.SaveChangesAsync();
         return teamEntity.Id;
@@ -23,9 +31,10 @@ public class TeamRepository : ITeamRepository
 
     public async Task<TeamEntity?> Get(Guid teamId)
     {
-        return await Task.FromResult(context.Teams
+        var team = await Task.FromResult(context.Teams
             .AsNoTracking()
             .FirstOrDefault(t => t.Id == teamId));
+        return team;
     }
 
     public async Task<List<TeamEntity>> GetAll()

@@ -30,4 +30,8 @@ public class UserEntity : BaseEntity
     public bool IsOrganized { get; set; }
 
     public List<TeamEntity> Teams { get; set; } = [];
+    
+    public List<TeamEntity> CaptainsTeams { get; set; } = [];
+    
+    public List<TournamentEntity> OrganizedTournaments { get; set; } = [];
 }

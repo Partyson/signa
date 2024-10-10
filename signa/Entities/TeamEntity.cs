@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
+﻿
 namespace signa.Entities;
 
 public class TeamEntity : BaseEntity
@@ -8,7 +7,7 @@ public class TeamEntity : BaseEntity
 
     public TournamentEntity Tournament { get; set; } = null!;
     
-    public GroupEntity Group { get; set; }
+    //public GroupEntity Group { get; set; }
 
     public UserEntity Captain {get; set;} = null!;  
     

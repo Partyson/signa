@@ -1,14 +1,12 @@
-﻿namespace signa.Dto;
+﻿namespace signa.Dto.tournament;
 
-public class CreateTournamentDto
+public class TournamentResponseDto
 {
     public string Title { get; set; }
     
     public string Location { get; set; }
     
     public string SportType { get; set; }
-    
-    public int TeamsMembersMaxNumber { get; set; }
     
     public string Gender { get; set; }
     
@@ -26,5 +24,4 @@ public class CreateTournamentDto
     
     public string? RegulationLink { get; set; }
 
-    public bool WithGroupStage { get; set; }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
+using signa.Dto.user;
 using signa.Interfaces;
 
 namespace signa.Controllers

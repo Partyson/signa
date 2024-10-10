@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using signa.Dto;
+using signa.Dto.tournament;
 using signa.Entities;
 using signa.Interfaces;
 

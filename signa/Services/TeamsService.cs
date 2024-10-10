@@ -1,5 +1,7 @@
 ﻿using Mapster;
 using signa.Dto;
+using signa.Dto.team;
+using signa.Dto.user;
 using signa.Entities;
 using signa.Interfaces;
 
@@ -39,12 +41,8 @@ public class TeamsService : ITeamsService
 
     public async Task<Guid> CreateTeam(CreateTeamDto newTeam)
     {
-        var teamEntity = newTeam.Adapt<TeamEntity>();
-        teamEntity.Id = Guid.NewGuid();
-        teamEntity.CreatedAt = DateTime.Now;
-        teamEntity.UpdatedAt = teamEntity.CreatedAt;
-        var id = await teamRepository.Create(teamEntity);
-        logger.LogInformation($"Team {teamEntity.Id} created");
+        var id = await teamRepository.Create(newTeam);
+        logger.LogInformation($"Team {id} created");
         
         return id;
     }
