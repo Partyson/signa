@@ -1,6 +1,6 @@
 ﻿namespace signa.Entities;
 
-public class UserEntity : BaseEntity
+public class UserEntity(Guid id, DateTime createdAt) : BaseEntity(id, createdAt)
 {
     public string FirstName { get; set; }
     
@@ -28,4 +28,10 @@ public class UserEntity : BaseEntity
     public bool IsDeleted { get; set; }
     
     public bool IsOrganized { get; set; }
+
+    public List<TeamEntity> Teams { get; set; } = [];
+    
+    public List<TeamEntity> CaptainsTeams { get; set; } = [];
+    
+    public List<TournamentEntity> OrganizedTournaments { get; set; } = [];
 }

@@ -21,9 +21,9 @@ public class TournamentRepository : ITournamentRepository
         return tournamentEntity.Id;
     }
 
-    public Task<TournamentEntity?> Get(Guid tournamentId)
+    public async Task<TournamentEntity?> Get(Guid tournamentId)
     {
-        return Task.FromResult(context.Tournaments
+        return await Task.FromResult(context.Tournaments
             .AsNoTracking()
             .FirstOrDefault(t => t.Id == tournamentId));
     }

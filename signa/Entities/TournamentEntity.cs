@@ -1,6 +1,6 @@
 ﻿namespace signa.Entities;
 
-public class TournamentEntity : BaseEntity
+public class TournamentEntity(Guid id, DateTime createdAt) : BaseEntity(id, createdAt)
 {
     public string Title { get; set; }
     
@@ -27,5 +27,11 @@ public class TournamentEntity : BaseEntity
     public string? RegulationLink { get; set; }
 
     public bool WithGroupStage { get; set; }
+
+    public List<TeamEntity> Teams { get; set; } = [];
     
+    //public List<GroupEntity> Groups { get; set; } = [];
+    
+    public List<UserEntity> Organizers { get; set; } = [];
+
 }

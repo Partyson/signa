@@ -1,4 +1,5 @@
 ﻿using signa.Dto;
+using signa.Dto.tournament;
 
 namespace signa.Interfaces;
 
