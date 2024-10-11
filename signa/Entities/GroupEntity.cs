@@ -1,6 +1,6 @@
 ﻿namespace signa.Entities;
 
-public class GroupEntity(Guid id, DateTime createdAt) : BaseEntity(id, createdAt)
+public class GroupEntity : BaseEntity
 {
     public List<TeamEntity> Teams { get; set; } = [];
     

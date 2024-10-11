@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace signa.Entities;
 
-public class TeamEntity(Guid id, DateTime createdAt) : BaseEntity(id, createdAt)
+public class TeamEntity : BaseEntity
 {
     public string Title { get; set; }
 

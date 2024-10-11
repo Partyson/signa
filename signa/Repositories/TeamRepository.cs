@@ -17,7 +17,9 @@ public class TeamRepository : ITeamRepository
 
     public async Task<Guid> Create(CreateTeamDto newTeam)
     {
-        var teamEntity = new TeamEntity(new Guid(), DateTime.Now);
+        var teamEntity = new TeamEntity();
+        teamEntity.Id = Guid.NewGuid();
+        teamEntity.CreatedAt = DateTime.Now;
         teamEntity.Tournament = await context.Tournaments
             .FirstOrDefaultAsync(t => newTeam.TournamentId == t.Id);
         

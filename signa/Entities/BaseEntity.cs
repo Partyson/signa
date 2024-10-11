@@ -1,10 +1,10 @@
 ﻿namespace signa.Entities;
 
-public class BaseEntity(Guid id, DateTime createdAt)
+public class BaseEntity
 {
-    public Guid Id { get; set; } = id;
+    public Guid Id { get; set; }
 
-    public DateTime CreatedAt { get; set; } = createdAt;
+    public DateTime CreatedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; } = createdAt;
+    public DateTime UpdatedAt { get; set; }
 }
