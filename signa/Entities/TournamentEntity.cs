@@ -27,5 +27,11 @@ public class TournamentEntity : BaseEntity
     public string? RegulationLink { get; set; }
 
     public bool WithGroupStage { get; set; }
+
+    public List<TeamEntity> Teams { get; set; } = [];
     
+    //public List<GroupEntity> Groups { get; set; } = [];
+    
+    public List<UserEntity> Organizers { get; set; } = [];
+
 }

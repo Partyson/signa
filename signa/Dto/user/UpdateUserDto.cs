@@ -1,4 +1,4 @@
-﻿namespace signa.Dto;
+﻿namespace signa.Dto.user;
 
 public class UpdateUserDto
 {

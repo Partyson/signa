@@ -12,6 +12,7 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+[Mm]igrations/
 
 # Mono auto generated files
 mono_crash.*
@@ -54,6 +55,7 @@ nunit-*.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+[Ll]ogs
 
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
