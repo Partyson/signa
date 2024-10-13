@@ -30,13 +30,6 @@ namespace signa.Controllers
             return teamResponse is null ? NotFound() : Ok(teamResponse);
         }
 
-        [HttpGet("teams")]
-        public async Task<ActionResult<List<TeamResponseDto>>> GetAll()
-        {
-            var teams = await teamsService.GetAllTeams();
-            return Ok(teams);
-        }
-
         [HttpPatch("{teamId}")]
         public async Task<IActionResult> Update(Guid teamId, [FromBody] UpdateTeamDto team)
         {

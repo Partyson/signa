@@ -31,14 +31,6 @@ public class TeamsService : ITeamsService
         return null;
     }
 
-    public async Task<List<TeamResponseDto>> GetAllTeams()
-    {
-        var teams = await teamRepository.GetAll();
-        logger.LogInformation($"Teams: {teams.Count}");
-        
-        return teams.Adapt<List<TeamResponseDto>>();
-    }
-
     public async Task<Guid> CreateTeam(CreateTeamDto newTeam)
     {
         var id = await teamRepository.Create(newTeam);

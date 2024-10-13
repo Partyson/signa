@@ -43,13 +43,7 @@ public class TeamRepository : ITeamRepository
             .FirstOrDefault(t => t.Id == teamId));
         return team;
     }
-
-    public async Task<List<TeamEntity>> GetAll()
-    {
-        return await context.Teams
-            .AsNoTracking()
-            .ToListAsync();
-    }
+    
 
     public async Task<Guid> Update(TeamEntity newTeamEntity)
     {

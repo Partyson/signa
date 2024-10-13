@@ -21,12 +21,5 @@ namespace signa.Controllers
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
             return Ok(matchesId);
         }
-
-        [HttpGet("{tournamentId}")]
-        public async Task<ActionResult<List<MatchResponseDto>>> GetForTournament(Guid tournamentId)
-        {
-            var matches = await matchesService.GetMatchesForTournament(tournamentId);
-            return Ok(matches);
-        }
     }
 }

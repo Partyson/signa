@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
+using signa.Dto.match;
+using signa.Dto.team;
 using signa.Dto.tournament;
 using signa.Interfaces;
 
@@ -35,6 +37,20 @@ namespace signa.Controllers
         {
             var tournaments = await tournamentsService.GetAllTournaments();
             return Ok(tournaments);
+        }
+
+        [HttpGet("{tournamentId}/matches")]
+        public async Task<ActionResult<List<MatchResponseDto>>> GetMatches([FromRoute] Guid tournamentId)
+        {
+            var matches = await tournamentsService.GetMatches(tournamentId);
+            return Ok(matches);
+        }
+
+        [HttpGet("{tournamentId}/teams")]
+        public async Task<ActionResult<List<TeamResponseDto>>> GetTeams([FromRoute] Guid tournamentId)
+        {
+            var teams = await tournamentsService.GetTeams(tournamentId);
+            return Ok(teams);
         }
 
         [HttpPatch("{tournamentId}")]

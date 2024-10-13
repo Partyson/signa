@@ -4,6 +4,5 @@ namespace signa.Interfaces;
 
 public interface IMatchRepository
 {
-    Task<List<Guid>> CreateMatches(Guid tournamentId);
-    Task<List<MatchEntity>> GetMatches(Guid tournamentId);
+    Task<List<Guid>> CreateMatches(List<MatchEntity> matches);
 }

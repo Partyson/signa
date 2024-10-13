@@ -1,5 +1,7 @@
 ﻿using Mapster;
 using signa.Dto;
+using signa.Dto.match;
+using signa.Dto.team;
 using signa.Dto.tournament;
 using signa.Entities;
 using signa.Interfaces;
@@ -36,6 +38,18 @@ public class TournamentsService : ITournamentsService
         var tournaments = await tournamentRepository.GetAll();
         logger.LogInformation($"Tournaments: {tournaments.Count}");
         return tournaments.Adapt<List<TournamentResponseDto>>();
+    }
+
+    public async Task<List<MatchResponseDto>> GetMatches(Guid tournamentId)
+    {
+        var tournament = await tournamentRepository.Get(tournamentId);
+        return tournament.Matches.Adapt<List<MatchResponseDto>>();
+    }
+
+    public async Task<List<TeamResponseDto>> GetTeams(Guid tournamentId)
+    {
+        var tournament = await tournamentRepository.Get(tournamentId);
+        return tournament.Teams.Adapt<List<TeamResponseDto>>();
     }
 
     public async Task<Guid> CreateTournament(CreateTournamentDto newTournament)
