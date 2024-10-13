@@ -17,4 +17,5 @@ public class UserResponseDto
     public string? PhoneNumber { get; set; }
     
     public string? PhotoLink { get; set; }
+    //TODO вернуть ссылку на вк
 }

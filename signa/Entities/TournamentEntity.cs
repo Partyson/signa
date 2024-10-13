@@ -36,6 +36,6 @@ public class TournamentEntity : BaseEntity
     
     public List<MatchEntity> Matches { get; set; } = [];
     
-    //public SocialMediaLinkEntity SocialMediaLink { get; set; }
+    public string? ChatLink { get; set; }
 
 }

@@ -17,7 +17,7 @@ public class MatchConfiguration : IEntityTypeConfiguration<MatchEntity>
         builder.HasOne(m => m.Tournament)
             .WithMany(t => t.Matches);
         
-        builder.HasOne(m => m.Group)
-            .WithMany(g => g.Matches);
+        //builder.HasOne(m => m.Group)
+            //.WithMany(g => g.Matches);
     }
 }

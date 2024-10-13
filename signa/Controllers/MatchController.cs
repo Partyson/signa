@@ -16,7 +16,7 @@ namespace signa.Controllers
         }
         
         [HttpPost("{tournamentId}")]
-        public async Task<IActionResult> CreateForTournament([FromBody] Guid tournamentId)
+        public async Task<IActionResult> CreateForTournament([FromRoute] Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
             return Ok(matchesId);

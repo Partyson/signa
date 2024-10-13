@@ -10,4 +10,5 @@ public class MatchEntity : BaseEntity
     
     public GroupEntity? Group { get; set; }
 
+    public List<MatchTeamEntity> MatchTeams { get; set; } = [];
 }

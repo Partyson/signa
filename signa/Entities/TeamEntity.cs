@@ -16,4 +16,6 @@ public class TeamEntity : BaseEntity
     public List<UserEntity> Members { get; set; } = [];
     
     public List<MatchEntity> Matches { get; set; } = [];
+    
+    public List<MatchTeamEntity> MatchTeams { get; set; } = [];
 }

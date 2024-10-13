@@ -2,6 +2,7 @@
 using Mapster;
 using signa.Dto.match;
 using signa.Dto.team;
+using signa.Dto.tournament;
 using signa.Dto.user;
 using signa.Entities;
 
@@ -28,6 +29,20 @@ public class MappingConfig
         TypeAdapterConfig<MatchEntity, MatchResponseDto>
             .NewConfig()
             .Map(dest => dest.NextMatchId, src => src.NextMatch == null ? Guid.Empty : src.NextMatch.Id)
-            .Map(dest => dest.TeamIds, src=> src.Teams == null ? new List<Guid>() : src.Teams.Select(t => t.Id).ToList());
+            .Map(dest => dest.TeamIds, src=> src.Teams.Count == 0 ? new List<Guid>() : src.Teams.Select(t => t.Id).ToList());
+        TypeAdapterConfig<TournamentEntity, TournamentInfoDto>
+            .NewConfig()
+            .Map(dest => dest.Matches,
+                src => src.Matches.Count == 0
+                    ? new List<MatchResponseDto>()
+                    : src.Matches.Select(m => m.Adapt<MatchResponseDto>()).ToList())
+            .Map(dest => dest.Teams,
+                src => src.Teams.Count == 0
+                    ? new List<TeamResponseDto>()
+                    : src.Teams.Select(t => t.Adapt<TeamResponseDto>()).ToList())
+            .Map(dest => dest.CurrentMembersCount,
+                src => src.Teams.Select(t => t.Members.Count).Sum())
+            .Map(dest => dest.Members,
+                src => src.Teams.SelectMany(t => t.Members).Adapt<List<UserResponseDto>>().ToList());
     }
 }

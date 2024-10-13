@@ -20,24 +20,17 @@ public class TournamentsService : ITournamentsService
     }
 
 
-    public async Task<TournamentResponseDto?> GetTournament(Guid tournamentId)
+    public async Task<TournamentInfoDto?> GetTournament(Guid tournamentId)
     {
-        var tournamentEntity = await tournamentRepository.Get(tournamentId);
-        if (tournamentEntity != null)
-        {
-            logger.LogInformation($"Tournament {tournamentId} is retrieved from database");
-            return tournamentEntity.Adapt<TournamentResponseDto>();
-        }
-        
-        logger.LogWarning($"Tournament {tournamentId} not found from database");
-        return null;
+        var tournament = await tournamentRepository.Get(tournamentId);
+        return tournament.Adapt<TournamentInfoDto>();
     }
 
-    public async Task<List<TournamentResponseDto>> GetAllTournaments()
+    public async Task<List<TournamentListItemDto>> GetAllTournaments()
     {
         var tournaments = await tournamentRepository.GetAll();
         logger.LogInformation($"Tournaments: {tournaments.Count}");
-        return tournaments.Adapt<List<TournamentResponseDto>>();
+        return tournaments.Adapt<List<TournamentListItemDto>>();
     }
 
     public async Task<List<MatchResponseDto>> GetMatches(Guid tournamentId)

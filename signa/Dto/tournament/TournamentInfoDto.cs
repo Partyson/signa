@@ -1,14 +1,16 @@
-﻿namespace signa.Dto.tournament;
+﻿using signa.Dto.match;
+using signa.Dto.team;
+using signa.Dto.user;
 
-public class CreateTournamentDto
+namespace signa.Dto.tournament;
+
+public class TournamentInfoDto
 {
     public string Title { get; set; }
     
     public string Location { get; set; }
     
     public string SportType { get; set; }
-    
-    public int TeamsMembersMaxNumber { get; set; }
     
     public string Gender { get; set; }
     
@@ -25,8 +27,16 @@ public class CreateTournamentDto
     public string State { get; set; }
     
     public string? RegulationLink { get; set; }
-
-    public bool WithGroupStage { get; set; }
     
     public string? ChatLink { get; set; }
+    
+    public List<TeamResponseDto> Teams { get; set; }
+    
+    public List<UserResponseDto> Members { get; set; }
+    
+    public List<MatchResponseDto> Matches { get; set; }
+    
+    public List<UserResponseDto> Organizers { get; set; }
+    
+    public int CurrentMembersCount { get; set; }
 }

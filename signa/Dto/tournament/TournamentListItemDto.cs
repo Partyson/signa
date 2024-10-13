@@ -1,6 +1,10 @@
-﻿namespace signa.Dto.tournament;
+﻿using signa.Dto.match;
+using signa.Dto.team;
+using signa.Dto.user;
 
-public class TournamentResponseDto
+namespace signa.Dto.tournament;
+
+public class TournamentListItemDto
 {
     public string Title { get; set; }
     
@@ -10,18 +14,9 @@ public class TournamentResponseDto
     
     public string Gender { get; set; }
     
-    public int MinFemaleCount { get; set; }
-    
-    public int MinMaleCount { get; set; }
-    
-    public int MaxTeamsCount { get; set; }
-    
     public DateTime StartedAt { get; set; }
     
     public DateTime EndRegistrationAt { get; set; }
     
     public string State { get; set; }
-    
-    public string? RegulationLink { get; set; }
-
 }

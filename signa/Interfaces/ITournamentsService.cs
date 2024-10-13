@@ -7,8 +7,8 @@ namespace signa.Interfaces;
 
 public interface ITournamentsService
 {
-    Task<TournamentResponseDto?> GetTournament(Guid tournamentId);
-    Task<List<TournamentResponseDto>> GetAllTournaments();
+    Task<TournamentInfoDto?> GetTournament(Guid tournamentId);
+    Task<List<TournamentListItemDto>> GetAllTournaments();
     Task<List<MatchResponseDto>> GetMatches(Guid tournamentId);
     Task<List<TeamResponseDto>> GetTeams(Guid tournamentId);
     Task<Guid> CreateTournament(CreateTournamentDto newTournament);
