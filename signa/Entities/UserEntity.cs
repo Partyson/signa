@@ -18,6 +18,8 @@ public class UserEntity : BaseEntity
     
     public string? PhotoLink { get; set; }
     
+    public string? VkLink { get; set; }
+    
     public string PasswordHash { get; set; }
     
     public string PasswordSalt { get; set; }
