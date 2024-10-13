@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using signa.Dto.match;
 using signa.Interfaces;
 
 namespace signa.Controllers
@@ -14,11 +15,18 @@ namespace signa.Controllers
             this.matchesService = matchesService;
         }
         
-        [HttpPost("create-matches")]
-        public async Task<IActionResult> Create([FromBody] Guid tournamentId)
+        [HttpPost("{tournamentId}")]
+        public async Task<IActionResult> CreateForTournament([FromBody] Guid tournamentId)
         {
-            var matchesId = await matchesService.CreateAllMatches(tournamentId);
+            var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
             return Ok(matchesId);
+        }
+
+        [HttpGet("{tournamentId}")]
+        public async Task<ActionResult<List<MatchResponseDto>>> GetForTournament(Guid tournamentId)
+        {
+            var matches = await matchesService.GetMatchesForTournament(tournamentId);
+            return Ok(matches);
         }
     }
 }

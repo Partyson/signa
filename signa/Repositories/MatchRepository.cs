@@ -19,11 +19,11 @@ public class MatchRepository : IMatchRepository
 
     public async Task<List<Guid>> CreateMatches(Guid tournamentId)
     {
-        var matchesId = new List<Guid>();
+        var matches = new List<MatchEntity>();
         var tournament = await context.Tournaments.Include(x => x.Teams)
             .FirstOrDefaultAsync(t => tournamentId == t.Id);
-        var teamsCount = tournament.Teams.Count;
-        for (var i = 0; i < teamsCount - 1; i++)
+        var matchCount = 15;//tournament.Teams.Count - 1;
+        for (var i = 0; i < matchCount; i++)
         {
             var match = new MatchEntity();
             var matchId = Guid.NewGuid();
@@ -31,9 +31,42 @@ public class MatchRepository : IMatchRepository
             match.Tournament = tournament;
             match.CreatedAt = DateTime.Now;
             match.UpdatedAt = DateTime.Now;
-            matchesId.Add(matchId);
-            await context.AddAsync(match);
+            matches.Add(match);
         }
-        return matchesId;
+
+        ConnectMatches(matches);
+        
+        foreach (var match in matches)
+            await context.AddAsync(match);
+        
+        await context.SaveChangesAsync();
+        return matches.Select(x => x.Id).ToList();
+    }
+
+    private void ConnectMatches(List<MatchEntity> matches)
+    {
+        var roundCount = (int)Math.Log2(matches.Count + 1);
+        var currentMatchIndex = 0;
+        while (roundCount > 1)
+        {
+            var step = (int)Math.Pow(2, roundCount - 1);
+            var matchInRound = step;
+            for (var i = 0; i < matchInRound / 2; ++i)
+            {
+                matches[currentMatchIndex].NextMatch = matches[currentMatchIndex + step];
+                matches[currentMatchIndex + 1].NextMatch = matches[currentMatchIndex + step];
+                currentMatchIndex += 2;
+                step--;
+            }
+
+            roundCount--;
+        }
+    }
+
+    public async Task<List<MatchEntity>> GetMatches(Guid tournamentId)
+    {
+        var tournament = await context.Tournaments.Include(x => x.Matches)
+            .FirstOrDefaultAsync(t => t.Id == tournamentId);
+        return tournament.Matches;
     }
 }

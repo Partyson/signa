@@ -1,4 +1,7 @@
-﻿using signa.Interfaces;
+﻿using System.Text.RegularExpressions;
+using Mapster;
+using signa.Dto.match;
+using signa.Interfaces;
 using signa.Repositories;
 
 namespace signa.Services;
@@ -13,9 +16,15 @@ public class MatchesService : IMatchesService
         this.matchRepository = matchRepository;
     }
 
-    public async Task<List<Guid>> CreateAllMatches(Guid tournamentId)
+    public async Task<List<Guid>> CreateMatchesForTournament(Guid tournamentId)
     {
         var matchesId = await matchRepository.CreateMatches(tournamentId);
         return matchesId;
+    }
+
+    public async Task<List<MatchResponseDto>> GetMatchesForTournament(Guid tournamentId)
+    {
+        var matchesEntity = await matchRepository.GetMatches(tournamentId);
+        return matchesEntity.Select(m => m.Adapt<MatchResponseDto>()).ToList();
     }
 }
