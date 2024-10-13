@@ -20,8 +20,9 @@ public class TeamRepository : ITeamRepository
         var teamEntity = new TeamEntity();
         teamEntity.Id = Guid.NewGuid();
         teamEntity.CreatedAt = DateTime.Now;
-        teamEntity.Tournament = await context.Tournaments
+        teamEntity.Tournament = await context.Tournaments.Include(tournamentEntity => tournamentEntity.Teams)
             .FirstOrDefaultAsync(t => newTeam.TournamentId == t.Id);
+        teamEntity.Tournament.Teams.Add(teamEntity);
         
         foreach (var membersId in newTeam.MembersId)
             teamEntity.Members = teamEntity.Members.Append(await context.Users.FirstOrDefaultAsync(u => u.Id == membersId)).ToList();

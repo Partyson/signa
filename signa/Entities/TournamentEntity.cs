@@ -30,8 +30,12 @@ public class TournamentEntity : BaseEntity
 
     public List<TeamEntity> Teams { get; set; } = [];
     
-    //public List<GroupEntity> Groups { get; set; } = [];
+    public List<GroupEntity> Groups { get; set; } = [];
     
     public List<UserEntity> Organizers { get; set; } = [];
+    
+    public List<MatchEntity> Matches { get; set; } = [];
+    
+    //public SocialMediaLinkEntity SocialMediaLink { get; set; }
 
 }

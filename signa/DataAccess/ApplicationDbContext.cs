@@ -13,6 +13,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<TeamEntity> Teams { get; set; }
     
     public DbSet<GroupEntity> Groups { get; set; }
+    
+    public DbSet<MatchEntity> Matches { get; set; }
+    
+    public DbSet<SocialMediaLinkEntity> SocialMediaLinks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

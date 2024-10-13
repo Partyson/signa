@@ -52,7 +52,7 @@ public class TournamentsService : ITournamentsService
     public async Task<Guid> UpdateTournament(Guid tournamentId, UpdateTournamentDto updateTournament)
     {
         var newTournamentEntity = updateTournament.Adapt<TournamentEntity>();
-        newTournamentEntity.Id = Guid.NewGuid();
+        newTournamentEntity.Id = tournamentId;
         var updatedTournamentId = await tournamentRepository.Update(newTournamentEntity);
         logger.LogInformation($"Tournament {updatedTournamentId} updated");
         return updatedTournamentId;

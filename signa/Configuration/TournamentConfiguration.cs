@@ -13,11 +13,13 @@ public class TournamentConfiguration : IEntityTypeConfiguration<TournamentEntity
         builder.HasMany(t => t.Teams)
             .WithOne(t => t.Tournament);
         
-        //builder.HasMany(t => t.Groups)
-         //   .WithOne(t => t.Tournament);
+        builder.HasMany(t => t.Groups)
+           .WithOne(t => t.Tournament);
 
         builder.HasMany(t => t.Organizers)
             .WithMany(u => u.OrganizedTournaments);
         
+        builder.HasMany(t => t.Matches)
+            .WithOne(m => m.Tournament);
     }
 }

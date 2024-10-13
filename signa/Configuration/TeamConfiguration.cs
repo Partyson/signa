@@ -19,6 +19,10 @@ public class TeamConfiguration : IEntityTypeConfiguration<TeamEntity>
         builder.HasOne(t => t.Captain)
             .WithMany(u => u.CaptainsTeams);
         
+        builder.HasMany(t => t.Matches)
+            .WithMany(m => m.Teams)
+            .UsingEntity<MatchTeamEntity>();
+        
         builder.Property(x => x.Title).IsRequired();
     }
 }
