@@ -28,6 +28,7 @@ public class TournamentRepository : ITournamentRepository
                 .ThenInclude(t => t.Members)
             .Include(t => t.Matches)
             .ThenInclude(m => m.Teams)
+            .ThenInclude(t => t.MatchTeams)
             .FirstOrDefault(t => t.Id == tournamentId));
     }
 
