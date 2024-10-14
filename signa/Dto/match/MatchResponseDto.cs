@@ -1,4 +1,6 @@
-﻿namespace signa.Dto.match;
+﻿using signa.Dto.team;
+
+namespace signa.Dto.match;
 
 public class MatchResponseDto
 {
@@ -6,7 +8,5 @@ public class MatchResponseDto
     
     public Guid NextMatchId { get; set; }
     
-    public List<string> TeamTitles { get; set; }
-    
-    public List<int> TeamScores { get; set; }
+    public List<TeamInMatchResponseDto> Teams { get; set; }
 }

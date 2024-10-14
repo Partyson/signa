@@ -29,10 +29,14 @@ public class MappingConfig
         TypeAdapterConfig<MatchEntity, MatchResponseDto>
             .NewConfig()
             .Map(dest => dest.NextMatchId, src => src.NextMatch == null ? Guid.Empty : src.NextMatch.Id)
-            .Map(dest => dest.TeamTitles,
-                src => src.Teams.Count == 0 ? new List<string>() : src.Teams.Select(t => t.Title).ToList())
-            .Map(dest => dest.TeamScores,
-                src => src.MatchTeams.Select(mt => mt.Score).ToList());
+            .Map(dest => dest.Teams,
+                src => src.Teams.Count == 0 ? new List<TeamInMatchResponseDto>() :
+                new List<TeamInMatchResponseDto>
+                    {
+                        CreateTeamInMatchDto(src, src.Teams[0]),
+                        CreateTeamInMatchDto(src, src.Teams[1])
+                    }
+                );
                 
                     
         TypeAdapterConfig<TournamentEntity, TournamentInfoDto>
@@ -49,5 +53,18 @@ public class MappingConfig
                 src => src.Teams.Select(t => t.Members.Count).Sum())
             .Map(dest => dest.Members,
                 src => src.Teams.SelectMany(t => t.Members).Adapt<List<UserResponseDto>>().ToList());
+    }
+
+    private static TeamInMatchResponseDto CreateTeamInMatchDto(MatchEntity match, TeamEntity team)
+    {
+        var teamInMatch = team
+            .Adapt<TeamResponseDto>()
+            .Adapt<TeamInMatchResponseDto>();
+        teamInMatch.Id = team.Id;
+        teamInMatch.Score = team.MatchTeams
+            .Where(mt => mt.Match.Id == match.Id)
+            .Select(mt => mt.Score)
+            .FirstOrDefault();
+        return teamInMatch;
     }
 }
