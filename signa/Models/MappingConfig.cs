@@ -60,7 +60,6 @@ public class MappingConfig
         var teamInMatch = team
             .Adapt<TeamResponseDto>()
             .Adapt<TeamInMatchResponseDto>();
-        teamInMatch.Id = team.Id;
         teamInMatch.Score = team.MatchTeams
             .Where(mt => mt.Match.Id == match.Id)
             .Select(mt => mt.Score)
