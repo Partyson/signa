@@ -29,7 +29,7 @@ public class MappingConfig
         TypeAdapterConfig<MatchEntity, MatchResponseDto>
             .NewConfig()
             .Map(dest => dest.NextMatchId, src => src.NextMatch == null ? Guid.Empty : src.NextMatch.Id)
-            .Map(dest => dest.TeamIds, src=> src.Teams.Count == 0 ? new List<Guid>() : src.Teams.Select(t => t.Id).ToList());
+            .Map(dest => dest.TeamTitles, src=> src.Teams.Count == 0 ? new List<string>() : src.Teams.Select(t => t.Title).ToList());
         TypeAdapterConfig<TournamentEntity, TournamentInfoDto>
             .NewConfig()
             .Map(dest => dest.Matches,

@@ -6,5 +6,7 @@ public class MatchResponseDto
     
     public Guid NextMatchId { get; set; }
     
-    public List<Guid> TeamIds { get; set; }
+    public List<string> TeamTitles { get; set; }
+    
+    public List<int> TeamScores { get; set; }
 }

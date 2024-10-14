@@ -16,6 +16,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     
     public DbSet<MatchEntity> Matches { get; set; }
     
+    public DbSet<MatchTeamEntity> MatchTeams { get; set; }
+    
     public DbSet<SocialMediaLinkEntity> SocialMediaLinks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
