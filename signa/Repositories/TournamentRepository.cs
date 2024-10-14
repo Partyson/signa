@@ -26,7 +26,6 @@ public class TournamentRepository : ITournamentRepository
         return await Task.FromResult(context.Tournaments
             .Include(t => t.Teams)
             .Include(t => t.Matches)
-            .AsNoTracking()
             .FirstOrDefault(t => t.Id == tournamentId));
     }
 

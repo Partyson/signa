@@ -20,13 +20,11 @@ public class MatchRepository : IMatchRepository
     public async Task<List<Guid>> CreateMatches(List<MatchEntity> matches)
     {
         foreach (var match in matches)
-            await context.AddAsync(match);
+        {
+            match.Tournament.Matches.Add(match);
+            await context.Matches.AddAsync(match);
+        }
         await context.SaveChangesAsync();
         return matches.Select(x => x.Id).ToList();
-    }
-
-    public async Task<List<MatchEntity>> GetMatches(TournamentEntity tournament)
-    {
-        return tournament.Matches;
     }
 }
