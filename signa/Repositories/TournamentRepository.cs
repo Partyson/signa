@@ -25,6 +25,7 @@ public class TournamentRepository : ITournamentRepository
     {
         return await Task.FromResult(context.Tournaments
             .Include(t => t.Teams)
+                .ThenInclude(t => t.Members)
             .Include(t => t.Matches)
             .FirstOrDefault(t => t.Id == tournamentId));
     }

@@ -23,7 +23,7 @@ public class MatchesService : IMatchesService
     {
         var tournament = await tournamentRepository.Get(tournamentId);
         var matches = new List<MatchEntity>();
-        var matchCount = 15;//tournament.Teams.Count - 1;
+        var matchCount = tournament.Teams.Count - 1;
         for (var i = 0; i < matchCount; i++)
         {
             var matchId = Guid.NewGuid();
@@ -38,11 +38,25 @@ public class MatchesService : IMatchesService
         }
 
         ConnectMatches(matches);
+        matches = AddTeams(matches, tournament.Teams);
 
         var matchesId = await matchRepository.CreateMatches(matches);
         return matchesId;
     }
-    
+
+    private static List<MatchEntity> AddTeams(List<MatchEntity> matches, List<TeamEntity> teams)
+    {
+        var matchIndex = 0;
+        for (var i = 0; i < teams.Count; i++)
+        {
+            matches[matchIndex].Teams.Add(teams[i]);
+            if (i % 2 != 0)
+                matchIndex++;
+        }
+
+        return matches;
+    }
+
     private static void ConnectMatches(List<MatchEntity> matches)
     {
         var roundCount = (int)Math.Log2(matches.Count + 1);
