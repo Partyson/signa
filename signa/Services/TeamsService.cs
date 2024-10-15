@@ -42,7 +42,7 @@ public class TeamsService : ITeamsService
     public async Task<Guid> UpdateTeam(Guid teamId, UpdateTeamDto updateTeam)
     {
         var newTeamEntity = updateTeam.Adapt<TeamEntity>();
-        newTeamEntity.Id = Guid.NewGuid();
+        newTeamEntity.Id = teamId;
         var updatedTeamId = await teamRepository.Update(newTeamEntity);
         logger.LogInformation($"Team {updatedTeamId} updated");
         

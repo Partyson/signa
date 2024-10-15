@@ -21,12 +21,13 @@ namespace signa.Controllers
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
             return Ok(matchesId);
         }
-/*
+
         [HttpPatch("{matchId}")]
-        public async Task<ActionResult> UpdateMatch([FromRoute] Guid matchId,
-            [FromBody] UpdateMatchDto updateMatchDto)
+        public async Task<ActionResult> UpdateMatchResult([FromRoute] Guid matchId,
+            [FromBody] UpdateMatchResultDto updateMatchResultDto)
         {
-            
-        }*/
+            var updatedMatchId = await matchesService.UpdateResult(matchId, updateMatchResultDto);
+            return Ok(updatedMatchId);
+        }
     }
 }

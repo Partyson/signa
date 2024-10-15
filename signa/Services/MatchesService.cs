@@ -44,6 +44,13 @@ public class MatchesService : IMatchesService
         return matchesId;
     }
 
+    public async Task<Guid> UpdateResult(Guid matchId, UpdateMatchResultDto updateMatchResultDto)
+    {
+        var updatedMatchId = await matchRepository.UpdateResults(matchId, updateMatchResultDto);
+        return updatedMatchId;
+
+    }
+
     private static List<MatchEntity> AddTeams(List<MatchEntity> matches, List<TeamEntity> teams)
     {
         var matchIndex = 0;

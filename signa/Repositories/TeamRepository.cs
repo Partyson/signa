@@ -36,11 +36,11 @@ public class TeamRepository : ITeamRepository
 
     public async Task<TeamEntity?> Get(Guid teamId)
     {
-        var team = await Task.FromResult(context.Teams
+        var team = await context.Teams
             .AsNoTracking()
             .Include(t => t.Members)
             .Include(t => t.Captain)
-            .FirstOrDefault(t => t.Id == teamId));
+            .FirstOrDefaultAsync(t => t.Id == teamId);
         return team;
     }
     
