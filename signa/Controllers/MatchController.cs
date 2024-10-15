@@ -15,7 +15,7 @@ namespace signa.Controllers
             this.matchesService = matchesService;
         }
         
-        [HttpPost("{tournamentId}")]
+        [HttpPost("create-matches/{tournamentId}")]
         public async Task<ActionResult> CreateForTournament([FromRoute] Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
@@ -35,6 +35,13 @@ namespace signa.Controllers
         {
             var matchWithSwappedTeamsId = await matchesService.SwapTeams(tournamentId, swapTeams.matchTeam1, swapTeams.matchTeam2);
             return Ok(matchWithSwappedTeamsId);
+        }
+
+        [HttpPost("{matchId}")]
+        public async Task<ActionResult> FinishMatch([FromRoute] Guid matchId)
+        {
+            var nextMatchId = await matchesService.FinishMatch(matchId);
+            return Ok(nextMatchId);
         }
     }
 }

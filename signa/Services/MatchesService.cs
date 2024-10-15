@@ -58,6 +58,12 @@ public class MatchesService : IMatchesService
 
     }
 
+    public async Task<Guid> FinishMatch(Guid matchId)
+    {
+        var nextMatchId = await matchRepository.FinishMatch(matchId);
+        return nextMatchId;
+    }
+
     private static List<MatchEntity> AddTeams(List<MatchEntity> matches, List<TeamEntity> teams)
     {
         var matchIndex = 0;

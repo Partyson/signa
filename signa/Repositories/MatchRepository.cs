@@ -67,4 +67,20 @@ public class MatchRepository : IMatchRepository
         await context.SaveChangesAsync();
         return new List<Guid>() {match1.Match.Id, match2.Match.Id};
     }
+
+    public async Task<Guid> FinishMatch(Guid matchId)
+    {
+        var matches = await context.MatchTeams
+            .Include(mt => mt.Match)
+            .ThenInclude(matchEntity => matchEntity.NextMatch)
+            .Include(mt => mt.Team)
+            .ToListAsync();
+       var currentMatch = matches.Where(mt => mt.Match.Id == matchId).ToList();
+       var winner = currentMatch.MaxBy(mt => mt.Score).Team;
+       var nextMatch = currentMatch.First().Match.NextMatch;
+       nextMatch.Teams.Add(winner);
+       winner.Matches.Add(nextMatch);
+       await context.SaveChangesAsync();
+       return nextMatch.Id;
+    }
 }
