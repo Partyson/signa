@@ -50,6 +50,13 @@ public class MatchesService : IMatchesService
         return updatedMatchId;
 
     }
+    
+    public async Task<List<Guid>> SwapTeams(Guid tournamentId, MatchTeamDto matchTeam1, MatchTeamDto matchTeam2)
+    {
+        var swappedMatchesId = await matchRepository.SwapTeams(tournamentId, matchTeam1, matchTeam2);
+        return swappedMatchesId;
+
+    }
 
     private static List<MatchEntity> AddTeams(List<MatchEntity> matches, List<TeamEntity> teams)
     {

@@ -22,12 +22,19 @@ namespace signa.Controllers
             return Ok(matchesId);
         }
 
-        [HttpPatch("{matchId}")]
+        [HttpPatch("{tournamentId}/{matchId}")]
         public async Task<ActionResult> UpdateMatchResult([FromRoute] Guid matchId,
             [FromBody] UpdateMatchResultDto updateMatchResultDto)
         {
             var updatedMatchId = await matchesService.UpdateResult(matchId, updateMatchResultDto);
             return Ok(updatedMatchId);
+        }
+
+        [HttpPatch("{tournamentId}")]
+        public async Task<ActionResult> SwapTeams([FromRoute] Guid tournamentId, [FromBody] SwapTeamDto swapTeams)
+        {
+            var matchWithSwappedTeamsId = await matchesService.SwapTeams(tournamentId, swapTeams.matchTeam1, swapTeams.matchTeam2);
+            return Ok(matchWithSwappedTeamsId);
         }
     }
 }
