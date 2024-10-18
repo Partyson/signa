@@ -1,8 +1,7 @@
 ﻿namespace signa.Entities;
 
-public class UserEntity
+public class UserEntity : BaseEntity
 {
-    public Guid Id { get; set; }
     public string FirstName { get; set; }
     
     public string LastName { get; set; }
@@ -19,17 +18,22 @@ public class UserEntity
     
     public string? PhotoLink { get; set; }
     
+    public string? VkLink { get; set; }
+    
     public string PasswordHash { get; set; }
     
     public string PasswordSalt { get; set; }
     
-    public DateTime CreatedAt { get; set; }
-    
-    public DateTime UpdatedAt { get; set; }
 
     public bool IsVerified { get; set; }
     
     public bool IsDeleted { get; set; }
     
     public bool IsOrganized { get; set; }
+
+    public List<TeamEntity> Teams { get; set; } = [];
+    
+    public List<TeamEntity> CaptainsTeams { get; set; } = [];
+    
+    public List<TournamentEntity> OrganizedTournaments { get; set; } = [];
 }

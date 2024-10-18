@@ -1,9 +1,7 @@
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
-using signa.Entities;
+using signa.Dto.user;
 using signa.Interfaces;
-using signa.Services;
 
 namespace signa.Controllers
 {
@@ -11,11 +9,13 @@ namespace signa.Controllers
     [Route("user")]
     public class UserController : ControllerBase
     {
-        private readonly UsersService usersService;
+        private readonly IUsersService usersService;
+        private readonly ILogger<UserController> logger;
 
-        public UserController(UsersService usersService)
+        public UserController(IUsersService usersService, ILogger<UserController> logger)
         {
             this.usersService = usersService;
+            this.logger = logger;
         }
         
         [HttpPost]
@@ -29,7 +29,7 @@ namespace signa.Controllers
         public async Task<ActionResult<UserResponseDto>> Get(Guid userId)
         {
             var userResponseDto =  await usersService.GetUser(userId);
-            return userResponseDto is null ? NotFound() : Ok(userResponseDto);
+            return userResponseDto != null ? Ok(userResponseDto) : NotFound();
         }
 
         [HttpPatch("{userId}")]

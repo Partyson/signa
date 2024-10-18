@@ -1,6 +1,6 @@
-﻿namespace signa.Dto;
+﻿namespace signa.Dto.user;
 
-public class CreateUserDto
+public class UserResponseDto
 {
     public string FirstName { get; set; }
     
@@ -16,7 +16,7 @@ public class CreateUserDto
     
     public string? PhoneNumber { get; set; }
     
-    public string Password { get; set; }
-    
     public string? PhotoLink { get; set; }
+    
+    public string? VkLink { get; set; }
 }
