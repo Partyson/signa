@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
+using signa.Dto.tournament;
 using signa.Interfaces;
 
 namespace signa.Controllers
@@ -37,7 +38,7 @@ namespace signa.Controllers
         }
 
         [HttpPatch("{tournamentId}")]
-        public async Task<IActionResult> UpdateUser(Guid tournamentId, [FromBody] UpdateTournamentDto tournament)
+        public async Task<IActionResult> Update(Guid tournamentId, [FromBody] UpdateTournamentDto tournament)
         {
             var updatedTournamentId = await tournamentsService.UpdateTournament(tournamentId, tournament);
             return Ok(updatedTournamentId);
