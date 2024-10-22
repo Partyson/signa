@@ -1,3 +1,4 @@
+using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
 using signa.Dto.user;
@@ -9,19 +10,22 @@ namespace signa.Controllers
     [Route("user")]
     public class UserController : ControllerBase
     {
+        private readonly IUnitOfWork unitOfWork;
         private readonly IUsersService usersService;
         private readonly ILogger<UserController> logger;
 
-        public UserController(IUsersService usersService, ILogger<UserController> logger)
+        public UserController(IUsersService usersService, ILogger<UserController> logger, IUnitOfWork unitOfWork)
         {
             this.usersService = usersService;
             this.logger = logger;
+            this.unitOfWork = unitOfWork;
         }
         
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto user)
         {
             var userId = await usersService.CreateUser(user);
+            await unitOfWork.SaveChangesAsync();
             return Ok(userId);
         }
         
@@ -36,6 +40,7 @@ namespace signa.Controllers
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
         {
             var id = await usersService.UpdateUser(userId, user);
+            await unitOfWork.SaveChangesAsync();
             return Ok(id);
         }
 
@@ -43,6 +48,7 @@ namespace signa.Controllers
         public async Task<IActionResult> Delete(Guid userId)
         {
             var deletedUserId = await usersService.DeleteUser(userId);
+            await unitOfWork.SaveChangesAsync();
             return Ok(deletedUserId);
         }
     }

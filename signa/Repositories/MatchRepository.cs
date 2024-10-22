@@ -44,7 +44,7 @@ public class MatchRepository : IMatchRepository
             .Where(mt => mt.Team.Id == teams[1].Id)
             .ExecuteUpdateAsync(s => 
                 s.SetProperty(mt => mt.Score, teams[1].Score));
-         return matchId;   
+         return matchId;
     }
 
     public async Task<List<Guid>> SwapTeams(Guid tournamentId, MatchTeamDto matchTeam1, MatchTeamDto matchTeam2)
@@ -65,7 +65,7 @@ public class MatchRepository : IMatchRepository
         await context.MatchTeams.AddAsync(match1);
         await context.MatchTeams.AddAsync(match2);
         await context.SaveChangesAsync();
-        return new List<Guid>() {match1.Match.Id, match2.Match.Id};
+        return new List<Guid> {match1.Match.Id, match2.Match.Id};
     }
 
     public async Task<Guid> FinishMatch(Guid matchId)

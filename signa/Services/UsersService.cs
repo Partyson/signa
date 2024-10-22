@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
+using EntityFrameworkCore.UnitOfWork.Interfaces;
+using JetBrains.Annotations;
 using Mapster;
 using signa.Dto;
 using signa.Dto.user;
@@ -21,40 +23,44 @@ public class UsersService : IUsersService
 
     public async Task<UserResponseDto?> GetUser(Guid userId)
     {
-        var userEntity = await userRepository.Get(userId);
-        if (userEntity != null)
+        var query = userRepository.SingleResultQuery()
+            .AndFilter(x => !x.IsDeleted)
+            .AndFilter(x => x.Id == userId);
+        var userEntity = await userRepository.FirstOrDefaultAsync(query);
+        if (userEntity == null)
         {
-            logger.LogWarning($"User {userEntity.Id} is retrieved from database");
-            return userEntity.Adapt<UserResponseDto>();
+            logger.LogWarning("User not found from database");
+            return null;
         }
-        logger.LogInformation("User not found from database");
-        return null;
+
+        logger.LogInformation($"User {userEntity.Id} is retrieved from database");
+        return userEntity.Adapt<UserResponseDto>();
     }
 
     public async Task<Guid> CreateUser(CreateUserDto newUser)
     {
         var newUserEntity = newUser.Adapt<UserEntity>();
-        newUserEntity.Id = Guid.NewGuid();
-        newUserEntity.CreatedAt = DateTime.Now;
-        newUserEntity.UpdatedAt = newUserEntity.CreatedAt;
-        var id = await userRepository.Create(newUserEntity);
+        var addedUser = await userRepository.AddAsync(newUserEntity);
         logger.LogInformation($"User {newUserEntity.Id} created");
-        return id;
+        return addedUser.Id;
     }
 
     public async Task<Guid> UpdateUser(Guid userId, UpdateUserDto updateUser)
     {
-        var newUserEntity = updateUser.Adapt<UserEntity>();
-        newUserEntity.Id = userId;
-        var updateUserId = await userRepository.Update(newUserEntity);
+        var query = userRepository.SingleResultQuery().AndFilter(x => x.Id == userId);
+        var userEntity = await userRepository.FirstOrDefaultAsync(query);
+        updateUser.Adapt(userEntity);
+        userEntity.UpdatedAt = DateTime.Now;
         logger.LogInformation($"User {userId} updated");
-        return updateUserId;
+        return userId;
     }
 
     public async Task<Guid> DeleteUser(Guid userId)
     {
-        var deletedUserId = await userRepository.Delete(userId);
+        await userRepository.UpdateAsync(
+            x => x.Id == userId, 
+            calls => calls.SetProperty(u => u.IsDeleted, true));
         logger.LogInformation($"User {userId} deleted");
-        return deletedUserId;
+        return userId;
     }
 }

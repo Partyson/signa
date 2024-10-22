@@ -1,6 +1,9 @@
+using EntityFrameworkCore.Repository.Extensions;
+using EntityFrameworkCore.UnitOfWork.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using signa.DataAccess;
+using signa.Entities;
 using signa.Interfaces;
 using signa.Models;
 using signa.Repositories;
@@ -48,9 +51,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             logging.AddDebug();
         }));
 });
+builder.Services.AddScoped<DbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+builder.Services.AddUnitOfWork();
+builder.Services.AddUnitOfWork<ApplicationDbContext>();
 
 var app = builder.Build();
-
 
 using var scope = app.Services.CreateScope();
 using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
