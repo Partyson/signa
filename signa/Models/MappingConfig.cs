@@ -17,11 +17,11 @@ public class MappingConfig
         TypeAdapterConfig<CreateUserDto, UserEntity>
             .NewConfig()
             .Map(dest => dest.PasswordHash, src => PasswordHasher.HashPassword(src.Password, salt))
-            .Map(dest => dest.PasswordSalt, src => System.Text.Encoding.Default.GetString(salt));
+            .Map(dest => dest.PasswordSalt, src => Convert.ToBase64String(salt));
         TypeAdapterConfig<UpdateUserDto, UserEntity>
             .NewConfig()
             .Map(dest => dest.PasswordHash, src => PasswordHasher.HashPassword(src.Password, salt))
-            .Map(dest => dest.PasswordSalt, src => System.Text.Encoding.Default.GetString(salt));
+            .Map(dest => dest.PasswordSalt, src => Convert.ToBase64String(salt));
         TypeAdapterConfig<TeamEntity, TeamResponseDto>
             .NewConfig()
             .Map(dest => dest.Captain, src => src.Captain.Adapt<UserResponseDto>())
