@@ -1,25 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.Repository;
+using Microsoft.EntityFrameworkCore;
 using signa.DataAccess;
 using signa.Entities;
 using signa.Interfaces;
 
 namespace signa.Repositories;
 
-public class TournamentRepository : ITournamentRepository
-{
-    private readonly ApplicationDbContext context;
-
-    public TournamentRepository(ApplicationDbContext context)
-    {
-        this.context = context;
-    }
-
-    public async Task<Guid> Create(TournamentEntity tournamentEntity)
-    {
-        await context.Tournaments.AddAsync(tournamentEntity);
-        await context.SaveChangesAsync();
-        return tournamentEntity.Id;
-    }
+public class TournamentRepository(ApplicationDbContext context) : Repository<TournamentEntity>(context), ITournamentRepository;
+    /*
 
     public async Task<TournamentEntity?> Get(Guid tournamentId)
     {
@@ -69,5 +57,4 @@ public class TournamentRepository : ITournamentRepository
             .Where(t => t.Id == tournamentId)
             .ExecuteDeleteAsync();
         return tournamentId;
-    }
-}
+    }*/

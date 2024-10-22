@@ -21,7 +21,8 @@ public class MatchesService : IMatchesService
 
     public async Task<List<Guid>> CreateMatchesForTournament(Guid tournamentId)
     {
-        var tournament = await tournamentRepository.Get(tournamentId);
+        throw new NotImplementedException();
+        /*var tournament = await tournamentRepository.Get(tournamentId);
         var matches = new List<MatchEntity>();
         var matchCount = tournament.Teams.Count - 1;
         for (var i = 0; i < matchCount; i++)
@@ -41,7 +42,7 @@ public class MatchesService : IMatchesService
         matches = AddTeams(matches, tournament.Teams);
 
         var matchesId = await matchRepository.CreateMatches(matches);
-        return matchesId;
+        return matchesId;*/
     }
 
     public async Task<Guid> UpdateResult(Guid matchId, UpdateMatchResultDto updateMatchResultDto)

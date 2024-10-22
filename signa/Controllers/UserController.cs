@@ -32,7 +32,7 @@ namespace signa.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<UserResponseDto>> Get(Guid userId)
         {
-            var userResponseDto =  await usersService.GetUser(userId);
+            var userResponseDto =  await usersService.GetUserResponse(userId);
             return userResponseDto != null ? Ok(userResponseDto) : NotFound();
         }
 

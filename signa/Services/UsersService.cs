@@ -21,7 +21,13 @@ public class UsersService : IUsersService
         this.logger = logger;
     }
 
-    public async Task<UserResponseDto?> GetUser(Guid userId)
+    public async Task<UserResponseDto?> GetUserResponse(Guid userId)
+    {
+        var user = GetUser(userId);
+        return user.Adapt<UserResponseDto>();
+    }
+
+    public async Task<UserEntity> GetUser(Guid userId)
     {
         var query = userRepository.SingleResultQuery()
             .AndFilter(x => !x.IsDeleted)
@@ -34,7 +40,15 @@ public class UsersService : IUsersService
         }
 
         logger.LogInformation($"User {userEntity.Id} is retrieved from database");
-        return userEntity.Adapt<UserResponseDto>();
+        return userEntity;
+    }
+
+    public async Task<List<UserEntity>> GetUserEntitiesByIds(List<Guid> userIds)
+    {
+        var query = userRepository.MultipleResultQuery()
+            .AndFilter(x => userIds.Contains(x.Id));
+        var userEntities = await userRepository.SearchAsync(query);
+        return userEntities.ToList();
     }
 
     public async Task<Guid> CreateUser(CreateUserDto newUser)
