@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using signa.Dto.match;
 using signa.Entities;
 using signa.Interfaces;
@@ -19,6 +20,15 @@ public class MatchesService : IMatchesService
         this.matchRepository = matchRepository;
         this.tournamentsService = tournamentsService;
         this.matchTeamsService = matchTeamsService;
+    }
+
+    public async Task<List<MatchResponseDto>> GetMatchesByTournamentId(Guid tournamentId)
+    {
+        var query = matchRepository.MultipleResultQuery()
+            .Include(x => x.Include(x => x.Teams))
+            .AndFilter(x => x.Tournament.Id == tournamentId);
+        var matches = await matchRepository.SearchAsync(query);
+        return matches.Select(m => m.Adapt<MatchResponseDto>()).ToList();
     }
 
     public async Task<List<Guid>> CreateMatchesForTournament(Guid tournamentId)

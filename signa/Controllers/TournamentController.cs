@@ -16,12 +16,14 @@ namespace signa.Controllers
         private readonly ITournamentsService tournamentsService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ITeamsService teamsService;
+        private readonly IMatchesService matchesService;
 
-        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork, ITeamsService teamsService)
+        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork, ITeamsService teamsService, IMatchesService matchesService)
         {
             this.tournamentsService = tournamentsService;
             this.unitOfWork = unitOfWork;
             this.teamsService = teamsService;
+            this.matchesService = matchesService;
         }
         
         [HttpPost]
@@ -45,13 +47,12 @@ namespace signa.Controllers
             var tournaments = await tournamentsService.GetAllTournaments();
             return Ok(tournaments);
         }
-        // //TODO использовать matchesservice
-        // [HttpGet("{tournamentId}/matches")]
-        // public async Task<ActionResult<List<MatchResponseDto>>> GetMatches([FromRoute] Guid tournamentId)
-        // {
-        //     var matches = await tournamentsService.GetMatches(tournamentId);
-        //     return Ok(matches);
-        // }
+        [HttpGet("{tournamentId}/matches")]
+        public async Task<ActionResult<List<MatchResponseDto>>> GetMatches([FromRoute] Guid tournamentId)
+        {
+            var matches = await matchesService.GetMatchesByTournamentId(tournamentId);
+            return Ok(matches);
+        }
         [HttpGet("{tournamentId}/teams")]
         public async Task<ActionResult<List<TeamResponseDto>>> GetTeams([FromRoute] Guid tournamentId)
         {
