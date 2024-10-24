@@ -23,7 +23,7 @@ public class UsersService : IUsersService
 
     public async Task<UserResponseDto?> GetUserResponse(Guid userId)
     {
-        var user = GetUser(userId);
+        var user = await GetUser(userId);
         return user.Adapt<UserResponseDto>();
     }
 

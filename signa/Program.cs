@@ -30,6 +30,8 @@ builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ITeamsService, TeamsService>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IMatchesService, MatchesService>();
+builder.Services.AddScoped<IMatchTeamsService, MatchTeamsService>();
+builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
 
 builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 builder.Services.AddControllers();

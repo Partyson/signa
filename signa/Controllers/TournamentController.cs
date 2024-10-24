@@ -1,4 +1,5 @@
 ﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto;
 using signa.Dto.match;
@@ -14,11 +15,13 @@ namespace signa.Controllers
     {
         private readonly ITournamentsService tournamentsService;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ITeamsService teamsService;
 
-        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork)
+        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork, ITeamsService teamsService)
         {
             this.tournamentsService = tournamentsService;
             this.unitOfWork = unitOfWork;
+            this.teamsService = teamsService;
         }
         
         [HttpPost]
@@ -36,26 +39,25 @@ namespace signa.Controllers
             return tournamentResponse is null ? NotFound() : Ok(tournamentResponse);
         }
 
-        [HttpGet]
+        [HttpGet("/tournaments")]
         public async Task<ActionResult<List<TournamentListItemDto>>> GetAll()
         {
             var tournaments = await tournamentsService.GetAllTournaments();
             return Ok(tournaments);
         }
-        /*//TODO использовать matchesservice
-        [HttpGet("{tournamentId}/matches")]
-        public async Task<ActionResult<List<MatchResponseDto>>> GetMatches([FromRoute] Guid tournamentId)
-        {
-            var matches = await tournamentsService.GetMatches(tournamentId);
-            return Ok(matches);
-        }
-        //TODO использовать teamservice
+        // //TODO использовать matchesservice
+        // [HttpGet("{tournamentId}/matches")]
+        // public async Task<ActionResult<List<MatchResponseDto>>> GetMatches([FromRoute] Guid tournamentId)
+        // {
+        //     var matches = await tournamentsService.GetMatches(tournamentId);
+        //     return Ok(matches);
+        // }
         [HttpGet("{tournamentId}/teams")]
         public async Task<ActionResult<List<TeamResponseDto>>> GetTeams([FromRoute] Guid tournamentId)
         {
-            var teams = await tournamentsService.GetTeams(tournamentId);
+            var teams = await teamsService.GetTeamsByTournamentId(tournamentId);
             return Ok(teams);
-        }*/
+        }
 
         [HttpPatch("{tournamentId}")]
         public async Task<IActionResult> Update(Guid tournamentId, [FromBody] UpdateTournamentDto tournament)

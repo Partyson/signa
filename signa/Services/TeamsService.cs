@@ -41,6 +41,18 @@ public class TeamsService : ITeamsService
         return teamEntity.Adapt<TeamResponseDto>();
     }
 
+    public async Task<List<TeamResponseDto>> GetTeamsByTournamentId(Guid tournamentId)
+    {
+        var query = teamRepository.MultipleResultQuery()
+            .Include(x => 
+                x.Include(y => y.Tournament)
+                    .Include(y => y.Members))
+            .AndFilter(x => x.Tournament.Id == tournamentId);
+        var teamEntities = await teamRepository.SearchAsync(query);
+        var teams = teamEntities.Select(x => x.Adapt<TeamResponseDto>());
+        return teams.ToList();
+    }
+
     public async Task<Guid> CreateTeam(CreateTeamDto newTeam)
     {
         var members = await usersService.GetUserEntitiesByIds(newTeam.MembersId);
@@ -58,9 +70,6 @@ public class TeamsService : ITeamsService
             Captain = capitan,
             Tournament = tournament
         };
-        tournament.Teams.Add(newTeamEntity);
-        members.ForEach(x => 
-            x.Teams.Add(newTeamEntity));
         var addedTeamEntity = await teamRepository.AddAsync(newTeamEntity);
         return addedTeamEntity.Id;
     }

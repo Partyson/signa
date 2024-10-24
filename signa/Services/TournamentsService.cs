@@ -13,7 +13,8 @@ public class TournamentsService : ITournamentsService
     private readonly ITournamentRepository tournamentRepository;
     private readonly ILogger<TournamentsService> logger;
 
-    public TournamentsService(ITournamentRepository tournamentRepository, ILogger<TournamentsService> logger)
+    public TournamentsService(ITournamentRepository tournamentRepository,
+        ILogger<TournamentsService> logger)
     {
         this.tournamentRepository = tournamentRepository;
         this.logger = logger;

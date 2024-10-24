@@ -11,18 +11,20 @@ namespace signa.Services;
 public class MatchesService : IMatchesService
 {
     private readonly IMatchRepository matchRepository;
-    private readonly ITournamentRepository tournamentRepository;
+    private readonly ITournamentsService tournamentsService;
+    private readonly IMatchTeamsService matchTeamsService;
 
-    public MatchesService(IMatchRepository matchRepository, ITournamentRepository tournamentRepository)
+    public MatchesService(IMatchRepository matchRepository, ITournamentsService tournamentsService, IMatchTeamsService matchTeamsService)
     {
         this.matchRepository = matchRepository;
-        this.tournamentRepository = tournamentRepository;
+        this.tournamentsService = tournamentsService;
+        this.matchTeamsService = matchTeamsService;
     }
 
     public async Task<List<Guid>> CreateMatchesForTournament(Guid tournamentId)
     {
-        throw new NotImplementedException();
-        /*var tournament = await tournamentRepository.Get(tournamentId);
+
+        var tournament = await tournamentsService.GetTournament(tournamentId);
         var matches = new List<MatchEntity>();
         var matchCount = tournament.Teams.Count - 1;
         for (var i = 0; i < matchCount; i++)
@@ -41,27 +43,27 @@ public class MatchesService : IMatchesService
         ConnectMatches(matches);
         matches = AddTeams(matches, tournament.Teams);
 
-        var matchesId = await matchRepository.CreateMatches(matches);
-        return matchesId;*/
+        await matchRepository.AddRangeAsync(matches);
+        return matches.Select(m => m.Id).ToList();
     }
 
     public async Task<Guid> UpdateResult(Guid matchId, UpdateMatchResultDto updateMatchResultDto)
     {
-        var updatedMatchId = await matchRepository.UpdateResults(matchId, updateMatchResultDto);
+        var updatedMatchId = await matchTeamsService.UpdateResult(matchId, updateMatchResultDto.Teams);
         return updatedMatchId;
-
     }
     
     public async Task<List<Guid>> SwapTeams(Guid tournamentId, MatchTeamDto matchTeam1, MatchTeamDto matchTeam2)
     {
-        var swappedMatchesId = await matchRepository.SwapTeams(tournamentId, matchTeam1, matchTeam2);
-        return swappedMatchesId;
+        throw new NotImplementedException();
+        // var swappedMatchesId = await matchRepository.SwapTeams(tournamentId, matchTeam1, matchTeam2);
+        // return swappedMatchesId;
 
     }
 
     public async Task<Guid> FinishMatch(Guid matchId)
     {
-        var nextMatchId = await matchRepository.FinishMatch(matchId);
+        var nextMatchId = await matchTeamsService.FinishMatch(matchId);
         return nextMatchId;
     }
 
