@@ -10,6 +10,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "signa.Tests", "signa.Tests", "{0E46212C-7684-4FC3-A076-7BFD84885C60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "signa.UnitTests", "signa.UnitTests\signa.UnitTests.csproj", "{F0726499-1168-4F4C-AA0B-81C630259DDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "signa.FunctionalTests", "signa.FunctionalTests\signa.FunctionalTests.csproj", "{37DED525-654D-4A2F-B378-027E198A1F6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,11 +26,23 @@ Global
 		{1AF6C8C1-9ED2-42AD-A516-20E86F432357}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AF6C8C1-9ED2-42AD-A516-20E86F432357}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AF6C8C1-9ED2-42AD-A516-20E86F432357}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0726499-1168-4F4C-AA0B-81C630259DDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0726499-1168-4F4C-AA0B-81C630259DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0726499-1168-4F4C-AA0B-81C630259DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0726499-1168-4F4C-AA0B-81C630259DDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37DED525-654D-4A2F-B378-027E198A1F6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37DED525-654D-4A2F-B378-027E198A1F6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37DED525-654D-4A2F-B378-027E198A1F6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37DED525-654D-4A2F-B378-027E198A1F6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {487CD2C7-51D1-409E-9323-63EDF2C258B0}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F0726499-1168-4F4C-AA0B-81C630259DDA} = {0E46212C-7684-4FC3-A076-7BFD84885C60}
+		{37DED525-654D-4A2F-B378-027E198A1F6D} = {0E46212C-7684-4FC3-A076-7BFD84885C60}
 	EndGlobalSection
 EndGlobal

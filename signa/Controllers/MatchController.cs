@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using signa.Dto.match;
 using signa.Interfaces;
 
@@ -9,24 +10,29 @@ namespace signa.Controllers
     public class MatchController : ControllerBase
     {
         private readonly IMatchesService matchesService;
+        private readonly IUnitOfWork unitOfWork;
 
-        public MatchController(IMatchesService matchesService)
+
+        public MatchController(IMatchesService matchesService, IUnitOfWork unitOfWork)
         {
             this.matchesService = matchesService;
+            this.unitOfWork = unitOfWork;
         }
         
         [HttpPost("create-matches/{tournamentId}")]
         public async Task<ActionResult> CreateForTournament([FromRoute] Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
+            await unitOfWork.SaveChangesAsync();
             return Ok(matchesId);
         }
 
-        [HttpPatch("{tournamentId}/{matchId}")]
+        [HttpPatch("/update-result/{matchId}")]
         public async Task<ActionResult> UpdateMatchResult([FromRoute] Guid matchId,
             [FromBody] UpdateMatchResultDto updateMatchResultDto)
         {
             var updatedMatchId = await matchesService.UpdateResult(matchId, updateMatchResultDto);
+            unitOfWork.SaveChanges();
             return Ok(updatedMatchId);
         }
 

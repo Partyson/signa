@@ -23,7 +23,6 @@ public class UserEntity : BaseEntity
     public string PasswordHash { get; set; }
     
     public string PasswordSalt { get; set; }
-    
 
     public bool IsVerified { get; set; }
     

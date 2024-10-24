@@ -1,12 +1,8 @@
-﻿using signa.Dto;
+﻿using EntityFrameworkCore.Repository.Interfaces;
+using signa.Dto;
 using signa.Entities;
+using signa.Models;
 
 namespace signa.Interfaces;
 
-public interface IUserRepository
-{
-    Task<Guid> Create(UserEntity userEntity);
-    Task<UserEntity?> Get(Guid userId);
-    Task<Guid> Update(UserEntity newUserEntity);
-    Task<Guid> Delete(Guid id);
-}
+public interface IUserRepository : IRepository<UserEntity>;
