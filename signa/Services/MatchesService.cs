@@ -58,12 +58,22 @@ public class MatchesService : IMatchesService
         return updatedMatchId;
     }
     
-    public async Task<List<Guid>> SwapTeams(Guid tournamentId, MatchTeamDto matchTeam1, MatchTeamDto matchTeam2)
+    public async Task<List<Guid>> SwapTeams(MatchTeamDto matchTeam1, MatchTeamDto matchTeam2)
     {
-        throw new NotImplementedException();
-        // var swappedMatchesId = await matchRepository.SwapTeams(tournamentId, matchTeam1, matchTeam2);
-        // return swappedMatchesId;
-
+        var query = matchRepository.MultipleResultQuery()
+            .Include(x => x.Include(x => x.Teams))
+            .AndFilter(x => x.Id == matchTeam1.MatchId || x.Id == matchTeam2.MatchId);
+        var matches = await matchRepository.SearchAsync(query);
+        //TODO нужна консультация как сделать это красивше
+        var match1Teams = matches.FirstOrDefault(m => m.Id == matchTeam1.MatchId).Teams;
+        var match2Teams = matches.FirstOrDefault(m => m.Id == matchTeam2.MatchId).Teams;
+        var match1TeamToRemove = match1Teams.FirstOrDefault(m => m.Id == matchTeam1.TeamId);
+        var match2TeamToRemove = match2Teams.FirstOrDefault(m => m.Id == matchTeam2.TeamId);
+        match1Teams.Remove(match1TeamToRemove);
+        match1Teams.Add(match2TeamToRemove);
+        match2Teams.Remove(match2TeamToRemove);
+        match1Teams.Add(match1TeamToRemove);
+        return matches.Select(m => m.Id).ToList();
     }
 
     public async Task<Guid> FinishMatch(Guid matchId)

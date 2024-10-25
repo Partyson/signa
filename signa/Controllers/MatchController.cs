@@ -43,10 +43,10 @@ namespace signa.Controllers
             return Ok(updatedMatchId);
         }
 
-        [HttpPatch("{tournamentId}")]
-        public async Task<ActionResult> SwapTeams([FromRoute] Guid tournamentId, [FromBody] SwapTeamDto swapTeams)
+        [HttpPatch]
+        public async Task<ActionResult> SwapTeams([FromBody] SwapTeamDto swapTeams)
         {
-            var matchWithSwappedTeamsId = await matchesService.SwapTeams(tournamentId, swapTeams.matchTeam1, swapTeams.matchTeam2);
+            var matchWithSwappedTeamsId = await matchesService.SwapTeams(swapTeams.matchTeam1, swapTeams.matchTeam2);
             return Ok(matchWithSwappedTeamsId);
         }
 
