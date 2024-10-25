@@ -1,9 +1,9 @@
-﻿using EntityFrameworkCore.Repository.Interfaces;
+﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
+using EntityFrameworkCore.Repository.Interfaces;
 using signa.Entities;
 
 namespace signa.Interfaces;
 
 public interface IMatchTeamRepository : IRepository<MatchTeamEntity>
 {
-    
 }

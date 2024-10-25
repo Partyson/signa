@@ -12,14 +12,17 @@ namespace signa.Services;
 public class MatchesService : IMatchesService
 {
     private readonly IMatchRepository matchRepository;
+    private readonly ILogger<MatchesService> logger;
     private readonly ITournamentsService tournamentsService;
     private readonly IMatchTeamsService matchTeamsService;
 
-    public MatchesService(IMatchRepository matchRepository, ITournamentsService tournamentsService, IMatchTeamsService matchTeamsService)
+    public MatchesService(IMatchRepository matchRepository, ITournamentsService tournamentsService,
+        IMatchTeamsService matchTeamsService, ILogger<MatchesService> logger)
     {
         this.matchRepository = matchRepository;
         this.tournamentsService = tournamentsService;
         this.matchTeamsService = matchTeamsService;
+        this.logger = logger;
     }
 
     public async Task<List<MatchResponseDto>> GetMatchesByTournamentId(Guid tournamentId)
@@ -28,6 +31,9 @@ public class MatchesService : IMatchesService
             .Include(x => x.Include(x => x.Teams))
             .AndFilter(x => x.Tournament.Id == tournamentId);
         var matches = await matchRepository.SearchAsync(query);
+        if(matches.Count == 0)
+            logger.LogWarning($"No matches found for tournament {tournamentId}");
+        
         return matches.Select(m => m.Adapt<MatchResponseDto>()).ToList();
     }
 
@@ -35,31 +41,20 @@ public class MatchesService : IMatchesService
     {
 
         var tournament = await tournamentsService.GetTournament(tournamentId);
-        var matches = new List<MatchEntity>();
-        var matchCount = tournament.Teams.Count - 1;
-        for (var i = 0; i < matchCount; i++)
-        {
-            var matchId = Guid.NewGuid();
-            var match = new MatchEntity
-            {
-                Id = matchId,
-                Tournament = tournament,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
-            matches.Add(match);
-        }
-
-        ConnectMatches(matches);
-        matches = AddTeams(matches, tournament.Teams);
+        var matches = Enumerable.Range(0, tournament.Teams.Count - 1)
+            .Select(_ => new MatchEntity { Tournament = tournament }).ToList()
+            .ConnectMatches()
+            .AddTeams(tournament.Teams);
 
         await matchRepository.AddRangeAsync(matches);
+        logger.LogInformation($"Created {matches.Count} matches for tournament {tournamentId}");
         return matches.Select(m => m.Id).ToList();
     }
 
     public async Task<Guid> UpdateResult(Guid matchId, UpdateMatchResultDto updateMatchResultDto)
     {
         var updatedMatchId = await matchTeamsService.UpdateResult(matchId, updateMatchResultDto.Teams);
+        logger.LogInformation($"Updated match results {updatedMatchId}");
         return updatedMatchId;
     }
     
@@ -74,41 +69,7 @@ public class MatchesService : IMatchesService
     public async Task<Guid> FinishMatch(Guid matchId)
     {
         var nextMatchId = await matchTeamsService.FinishMatch(matchId);
+        logger.LogInformation($"Finished match {matchId}. Winner team go to {nextMatchId}");
         return nextMatchId;
     }
-
-    private static List<MatchEntity> AddTeams(List<MatchEntity> matches, List<TeamEntity> teams)
-    {
-        var matchIndex = 0;
-        for (var i = 0; i < teams.Count; i++)
-        {
-            matches[matchIndex].Teams.Add(teams[i]);
-            if (i % 2 != 0)
-                matchIndex++;
-        }
-
-        return matches;
-    }
-
-    private static void ConnectMatches(List<MatchEntity> matches)
-    {
-        var roundCount = (int)Math.Log2(matches.Count + 1);
-        var currentMatchIndex = 0;
-        while (roundCount > 1)
-        {
-            var step = (int)Math.Pow(2, roundCount - 1);
-            var matchInRound = step;
-            for (var i = 0; i < matchInRound / 2; ++i)
-            {
-                matches[currentMatchIndex].NextMatch = matches[currentMatchIndex + step];
-                matches[currentMatchIndex + 1].NextMatch = matches[currentMatchIndex + step];
-                currentMatchIndex += 2;
-                step--;
-            }
-
-            roundCount--;
-        }
-    }
-    
-
 }

@@ -19,16 +19,23 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
-        [HttpPost("create-matches/{tournamentId}")]
-        public async Task<ActionResult> CreateForTournament([FromRoute] Guid tournamentId)
+        [HttpPost]
+        public async Task<ActionResult> CreateForTournament([FromQuery] Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
             await unitOfWork.SaveChangesAsync();
             return Ok(matchesId);
         }
 
-        [HttpPatch("/update-result/{matchId}")]
-        public async Task<ActionResult> UpdateMatchResult([FromRoute] Guid matchId,
+        [HttpGet]
+        public async Task<ActionResult<List<MatchResponseDto>>> GetMatchesByTournamentId([FromQuery] Guid tournamentId)
+        {
+            var matches = await matchesService.GetMatchesByTournamentId(tournamentId);
+            return Ok(matches);
+        }
+
+        [HttpPatch]
+        public async Task<ActionResult> UpdateMatchResult([FromQuery] Guid matchId,
             [FromBody] UpdateMatchResultDto updateMatchResultDto)
         {
             var updatedMatchId = await matchesService.UpdateResult(matchId, updateMatchResultDto);

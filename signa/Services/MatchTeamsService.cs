@@ -17,26 +17,22 @@ public class MatchTeamsService : IMatchTeamsService
 
     public async Task<Guid> UpdateResult(Guid matchId, List<UpdateTeamScoreDto> newTeamScores)
     {
-        var query = matchTeamRepository.MultipleResultQuery()
-            .Include(x => 
-                x.Include(x => x.Match)
-                .Include(x => x.Team))
-            .AndFilter(x => x.Match.Id == matchId);
+        var query = matchTeamRepository.SearchMatchById(matchId);
         var matchTeamEntities = await matchTeamRepository.SearchAsync(query);
-        for(var i = 0; i < 2; i++)
+        for (var i = 0; i < 2; i++)
+        {
             matchTeamEntities[i].Score = newTeamScores[0].Id == matchTeamEntities[i].Team.Id ?
                 newTeamScores[0].Score :
                 newTeamScores[1].Score;
+            matchTeamEntities[i].Match.UpdatedAt = DateTime.Now;
+        }
+ 
         return matchTeamEntities[0].Match.Id;
     }
 
     public async Task<Guid> FinishMatch(Guid matchId)
     {
-        var query = matchTeamRepository.MultipleResultQuery()
-            .Include(x => 
-                x.Include(x => x.Match)
-                    .Include(x => x.Team))
-            .AndFilter(x => x.Match.Id == matchId);
+        var query = matchTeamRepository.SearchMatchById(matchId);
         var matchTeamsEntity = await matchTeamRepository.SearchAsync(query);
         var winner = matchTeamsEntity.MaxBy(x => x.Score).Team;
         var nextMatch = matchTeamsEntity.First().Match.NextMatch;

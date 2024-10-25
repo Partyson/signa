@@ -30,6 +30,8 @@ public class TournamentsService : ITournamentsService
     public async Task<TournamentEntity?> GetTournament(Guid tournamentId)
     {
         var query = tournamentRepository.SingleResultQuery()
+            .Include(x => 
+                x.Include(x => x.Teams))
             .AndFilter(x => x.Id == tournamentId);
         var tournamentEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         if (tournamentEntity == null)

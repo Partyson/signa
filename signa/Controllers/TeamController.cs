@@ -19,7 +19,7 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
-        [HttpPost("create-team")]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTeamDto team)
         {
             var teamId = await teamsService.CreateTeam(team);
@@ -32,6 +32,13 @@ namespace signa.Controllers
         {
             var teamResponse = await teamsService.GetTeam(teamId);
             return teamResponse is null ? NotFound() : Ok(teamResponse);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<TeamResponseDto>>> GetTeamsByTournamentId([FromQuery] Guid tournamentId)
+        {
+            var teams = await teamsService.GetTeamsByTournamentId(tournamentId);
+            return Ok(teams);
         }
 
         [HttpPatch("{teamId}")]

@@ -12,12 +12,10 @@ namespace signa.Controllers
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IUsersService usersService;
-        private readonly ILogger<UserController> logger;
 
-        public UserController(IUsersService usersService, ILogger<UserController> logger, IUnitOfWork unitOfWork)
+        public UserController(IUsersService usersService, IUnitOfWork unitOfWork)
         {
             this.usersService = usersService;
-            this.logger = logger;
             this.unitOfWork = unitOfWork;
         }
         

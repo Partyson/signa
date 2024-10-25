@@ -10,20 +10,16 @@ using signa.Interfaces;
 namespace signa.Controllers
 {
     [ApiController]
-    [Route("tournament")]
+    [Route("tournaments")]
     public class TournamentController : ControllerBase
     {
         private readonly ITournamentsService tournamentsService;
         private readonly IUnitOfWork unitOfWork;
-        private readonly ITeamsService teamsService;
-        private readonly IMatchesService matchesService;
 
-        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork, ITeamsService teamsService, IMatchesService matchesService)
+        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork)
         {
             this.tournamentsService = tournamentsService;
             this.unitOfWork = unitOfWork;
-            this.teamsService = teamsService;
-            this.matchesService = matchesService;
         }
         
         [HttpPost]
@@ -46,18 +42,6 @@ namespace signa.Controllers
         {
             var tournaments = await tournamentsService.GetAllTournaments();
             return Ok(tournaments);
-        }
-        [HttpGet("{tournamentId}/matches")]
-        public async Task<ActionResult<List<MatchResponseDto>>> GetMatches([FromRoute] Guid tournamentId)
-        {
-            var matches = await matchesService.GetMatchesByTournamentId(tournamentId);
-            return Ok(matches);
-        }
-        [HttpGet("{tournamentId}/teams")]
-        public async Task<ActionResult<List<TeamResponseDto>>> GetTeams([FromRoute] Guid tournamentId)
-        {
-            var teams = await teamsService.GetTeamsByTournamentId(tournamentId);
-            return Ok(teams);
         }
 
         [HttpPatch("{tournamentId}")]

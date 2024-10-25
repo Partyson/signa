@@ -49,6 +49,9 @@ public class TeamsService : ITeamsService
                     .Include(y => y.Members))
             .AndFilter(x => x.Tournament.Id == tournamentId);
         var teamEntities = await teamRepository.SearchAsync(query);
+        if (teamEntities.Count == 0)
+            logger.LogWarning("Tournament don't have any teams");
+        logger.LogInformation($"Tournament {tournamentId} has {teamEntities.Count} teams");
         var teams = teamEntities.Select(x => x.Adapt<TeamResponseDto>());
         return teams.ToList();
     }

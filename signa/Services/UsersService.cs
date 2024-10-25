@@ -48,6 +48,14 @@ public class UsersService : IUsersService
         var query = userRepository.MultipleResultQuery()
             .AndFilter(x => userIds.Contains(x.Id));
         var userEntities = await userRepository.SearchAsync(query);
+        if (userEntities.Count < userIds.Count)
+        {
+            if(userEntities.Count == 0)
+                logger.LogWarning("All users not found in database");
+            else
+                logger.LogWarning("Not all users found in database");
+        }
+        
         return userEntities.ToList();
     }
 
