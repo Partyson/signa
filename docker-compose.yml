@@ -27,9 +27,6 @@ services:
     build:
       context: ./signa
       dockerfile: Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Server=mysql_db;Database=application_db;User=dbuser;Password=111;
     ports:
       - "5000:8080"
     depends_on:

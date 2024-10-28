@@ -90,7 +90,7 @@ public static class MatchCollectionExtensions
     internal static IEnumerable<MatchEntity> AddTeams(this IEnumerable<MatchEntity> matches, List<TeamEntity> teams)
     {
         var matchIndex = 0;
-        var matchEntities = matches.ToList();
+        var matchEntities = matches.ToList(); 
         for (var i = 0; i < teams.Count; i++)
         {
             matchEntities[matchIndex].Teams.Add(teams[i]);
