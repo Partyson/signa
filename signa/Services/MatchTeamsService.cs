@@ -1,7 +1,9 @@
-﻿using LinqKit;
+﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using signa.Dto.match;
 using signa.Dto.team;
+using signa.Entities;
 using signa.Interfaces;
 
 namespace signa.Services;
@@ -17,13 +19,13 @@ public class MatchTeamsService : IMatchTeamsService
 
     public async Task<Guid> UpdateResult(Guid matchId, List<UpdateTeamScoreDto> newTeamScores)
     {
-        var query = matchTeamRepository.SearchMatchById(matchId);
+        var query = matchTeamRepository.SearchMatchByIdQuery(matchId);
         var matchTeamEntities = await matchTeamRepository.SearchAsync(query);
         for (var i = 0; i < 2; i++)
         {
-            matchTeamEntities[i].Score = newTeamScores[0].Id == matchTeamEntities[i].Team.Id ?
-                newTeamScores[0].Score :
-                newTeamScores[1].Score;
+            matchTeamEntities[i].Score = newTeamScores[0].Id == matchTeamEntities[i].Team.Id 
+                ? newTeamScores[0].Score 
+                : newTeamScores[1].Score;
             matchTeamEntities[i].Match.UpdatedAt = DateTime.Now;
         }
  
@@ -32,11 +34,24 @@ public class MatchTeamsService : IMatchTeamsService
 
     public async Task<Guid> FinishMatch(Guid matchId)
     {
-        var query = matchTeamRepository.SearchMatchById(matchId);
+        var query = matchTeamRepository.SearchMatchByIdQuery(matchId);
         var matchTeamsEntity = await matchTeamRepository.SearchAsync(query);
         var winner = matchTeamsEntity.MaxBy(x => x.Score).Team;
         var nextMatch = matchTeamsEntity.First().Match.NextMatch;
         nextMatch.Teams.Add(winner);
         return nextMatch.Id;
+    }
+}
+
+public static class MatchTeamRepositoryExtensions
+{
+    internal static IMultipleResultQuery<MatchTeamEntity> SearchMatchByIdQuery(this IMatchTeamRepository repository,
+        Guid matchId)
+    {
+        return repository.MultipleResultQuery()
+            .Include(x => 
+                x.Include(x => x.Match)
+                    .Include(x => x.Team))
+            .AndFilter(x => x.Match.Id == matchId);
     }
 }

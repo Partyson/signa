@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using JetBrains.Annotations;
+using LinqKit;
 using Mapster;
 using signa.Dto;
 using signa.Dto.user;
@@ -49,12 +50,9 @@ public class UsersService : IUsersService
             .AndFilter(x => userIds.Contains(x.Id));
         var userEntities = await userRepository.SearchAsync(query);
         if (userEntities.Count < userIds.Count)
-        {
-            if(userEntities.Count == 0)
-                logger.LogWarning("All users not found in database");
-            else
-                logger.LogWarning("Not all users found in database");
-        }
+            userIds
+                .Except(userEntities.Select(x => x.Id))
+                .ForEach(id => logger.LogWarning($"User {id} has not been found in database"));
         
         return userEntities.ToList();
     }
