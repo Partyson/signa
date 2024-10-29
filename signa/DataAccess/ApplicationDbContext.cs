@@ -27,4 +27,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.ApplyConfiguration(new TeamConfiguration());
         modelBuilder.ApplyConfiguration(new MatchConfiguration());
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var connectionString = "server=localhost;Port=3306;user=dbuser;password=111;database=application_db;";
+        optionsBuilder
+            .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), 
+                o => o.EnableStringComparisonTranslations());
+    }
 }

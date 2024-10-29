@@ -57,6 +57,16 @@ public class UsersService : IUsersService
         return userEntities.ToList();
     }
 
+    public async Task<List<UserSearchItemDto>> GetUsersByPrefix(string prefix)
+    {
+        var query = userRepository.MultipleResultQuery()
+            .AndFilter(x => x.FullName.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(x => x.FullName)
+            .Page(1, 7);
+        var foundedUsers = await userRepository.SearchAsync(query);
+        return foundedUsers.Select(x => x.Adapt<UserSearchItemDto>()).ToList();
+    }
+
     public async Task<Guid> CreateUser(CreateUserDto newUser)
     {
         var newUserEntity = newUser.Adapt<UserEntity>();

@@ -35,4 +35,6 @@ public class UserEntity : BaseEntity
     public List<TeamEntity> CaptainsTeams { get; set; } = [];
     
     public List<TournamentEntity> OrganizedTournaments { get; set; } = [];
+    
+    public string FullName { get; set; }
 }

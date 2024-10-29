@@ -22,11 +22,20 @@ public class MappingConfig
             .NewConfig()
             .Map(dest => dest.PasswordHash, src => PasswordHasher.HashPassword(src.Password, salt))
             .Map(dest => dest.PasswordSalt, src => Convert.ToBase64String(salt));
+        TypeAdapterConfig<UserEntity, UserSearchItemDto>
+            .NewConfig()
+            .Map(dest => dest.Id, src => src.Id)
+            .Map(dest => dest.FirstName, src => src.FirstName)
+            .Map(dest => dest.LastName, src => src.LastName)
+            .Map(dest => dest.Patronymic, src => src.Patronymic)
+            .Map(dest => dest.GroupNumber, src => src.GroupNumber)
+            .IgnoreNonMapped(true);
             
         TypeAdapterConfig<TeamEntity, TeamResponseDto>
             .NewConfig()
             .Map(dest => dest.Captain, src => src.Captain.Adapt<UserResponseDto>())
             .Map(dest => dest.Members, src => src.Members.Select(m => m.Adapt<UserResponseDto>()));
+        
         TypeAdapterConfig<MatchEntity, MatchResponseDto>
             .NewConfig()
             .Map(dest => dest.NextMatchId, src => src.NextMatch == null ? Guid.Empty : src.NextMatch.Id)
@@ -38,8 +47,7 @@ public class MappingConfig
                         CreateTeamInMatchDto(src, src.Teams[1])
                     }
                 );
-                
-                    
+        
         TypeAdapterConfig<TournamentEntity, TournamentInfoDto>
             .NewConfig()
             .Map(dest => dest.Matches,

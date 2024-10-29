@@ -37,5 +37,8 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(x => x.Email)
             .HasMaxLength(User.VARCHAR_LIMIT)
             .IsRequired();
+        
+        builder.Property(x => x.FullName)
+            .HasComputedColumnSql("CONCAT(FirstName, \" \", LastName, \" \", Patronymic)", stored: true);
     }
 }

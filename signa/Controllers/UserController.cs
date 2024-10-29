@@ -34,6 +34,13 @@ namespace signa.Controllers
             return userResponseDto != null ? Ok(userResponseDto) : NotFound();
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<UserSearchItemDto>>> GetAllUsersByPrefix([FromQuery] string prefix)
+        {
+            var foundUsers = await usersService.GetUsersByPrefix(prefix);
+            return Ok(foundUsers);
+        }
+
         [HttpPatch("{userId}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
         {
