@@ -45,7 +45,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
+            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")), 
+            optionsBuilder => optionsBuilder.EnableStringComparisonTranslations())
         .EnableSensitiveDataLogging()
         .UseLoggerFactory(LoggerFactory.Create(logging =>
         {

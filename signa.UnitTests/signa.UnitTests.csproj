@@ -27,4 +27,8 @@
       <ProjectReference Include="..\signa\signa.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ServicesTests\UserServiceTests\" />
+    </ItemGroup>
+
 </Project>

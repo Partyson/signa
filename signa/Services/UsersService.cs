@@ -71,7 +71,7 @@ public class UsersService : IUsersService
     {
         var newUserEntity = newUser.Adapt<UserEntity>();
         var addedUser = await userRepository.AddAsync(newUserEntity);
-        logger.LogInformation($"User {newUserEntity.Id} created");
+        logger.LogInformation($"User {addedUser.Id} created");
         return addedUser.Id;
     }
 
