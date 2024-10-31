@@ -9,7 +9,7 @@ public class GetTournamentTests : TournamentServiceTestBase
     public async Task Should_success_get_all_tournaments()
     {
         var tournaments = await tournamentsService.GetAllTournaments();
-        var createdTournamentId = await TestCreateTournament();
+        var createdTournamentId = await UltraMegaSigmaGigaHelper.TestCreateTournament();
         
         var currentTournaments = await tournamentsService.GetAllTournaments();
         
@@ -19,7 +19,7 @@ public class GetTournamentTests : TournamentServiceTestBase
     [Test]
     public async Task Should_success_get_tournament_entity()
     {
-        var createdTournamentId = await TestCreateTournament();
+        var createdTournamentId = await UltraMegaSigmaGigaHelper.TestCreateTournament();
         
         var foundTournament = await tournamentsService.GetTournament(createdTournamentId);
         
