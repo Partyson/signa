@@ -6,11 +6,11 @@ namespace signa.FunctionalTests.Services.MatchesService;
 
 public class MatchesServiceTestBase : TestBase
 {
-    protected readonly IUsersService usersService;
+    protected readonly IMatchesService matchesService;
     protected readonly IUnitOfWork unitOfWork;
     public MatchesServiceTestBase()
     {
-        usersService = Container.GetService<IUsersService>()!;
+        matchesService = Container.GetService<IMatchesService>()!;
         unitOfWork = Container.GetService<IUnitOfWork>()!;
     }
 }

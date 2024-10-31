@@ -6,11 +6,14 @@ namespace signa.FunctionalTests.Services.TeamsService;
 
 public class TeamsServiceTestBase : TestBase
 {
-    protected readonly IUsersService usersService;
+    protected readonly ITeamsService teamService;
+    protected readonly ITournamentsService tournamentsService;
     protected readonly IUnitOfWork unitOfWork;
+    protected readonly List<Guid> teamsToDelete = [];
     public TeamsServiceTestBase()
     {
-        usersService = Container.GetService<IUsersService>()!;
+        teamService = Container.GetService<ITeamsService>()!;
+        tournamentsService = Container.GetService<ITournamentsService>()!;
         unitOfWork = Container.GetService<IUnitOfWork>()!;
     }
 }

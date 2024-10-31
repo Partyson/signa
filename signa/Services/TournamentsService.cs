@@ -66,7 +66,7 @@ public class TournamentsService : ITournamentsService
         var userEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         updateTournament.Adapt(userEntity);
         userEntity.UpdatedAt = DateTime.Now;
-        logger.LogInformation($"User {tournamentId} updated");
+        logger.LogInformation($"Tournament {tournamentId} updated");
         return tournamentId;
     }
 
@@ -75,7 +75,7 @@ public class TournamentsService : ITournamentsService
         var query = tournamentRepository.SingleResultQuery().AndFilter(x => x.Id == tournamentId);
         var teamEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         tournamentRepository.Remove(teamEntity);
-        logger.LogInformation($"Team {tournamentId} deleted");
+        logger.LogInformation($"Tournament {tournamentId} deleted");
         
         return tournamentId;
     }

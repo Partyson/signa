@@ -37,7 +37,7 @@ public class TeamsService : ITeamsService
             return null;
         }
 
-        logger.LogInformation($"User {teamEntity.Id} is retrieved from database");
+        logger.LogInformation($"Team {teamEntity.Id} is retrieved from database");
         return teamEntity.Adapt<TeamResponseDto>();
     }
 

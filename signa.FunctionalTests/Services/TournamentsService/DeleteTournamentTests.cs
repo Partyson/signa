@@ -3,16 +3,25 @@ using signa.Dto.tournament;
 
 namespace signa.FunctionalTests.Services.TournamentsService;
 
-public class CreateTournamentTests : TournamentServiceTestBase
+public class DeleteTournamentTests : TournamentServiceTestBase
 {
-    [TestCase("male")]
-    [TestCase("female")]
-    [TestCase("mixed")]
-    public async Task Should_success_when_tournament_is_valid(string gender)
+    [Test]
+    public async Task Should_success_delete_tournament()
+    {
+        var createdTournamentId = await TestCreateTournament();
+        
+        await tournamentsService.DeleteTournament(createdTournamentId);
+        unitOfWork.SaveChanges();
+        var tournaments = await tournamentsService.GetAllTournaments();
+        
+        tournaments.Select(t => t.Id).Contains(createdTournamentId).Should().BeFalse();
+    }
+    
+    private async Task<Guid> TestCreateTournament()
     {
         var createTournamentDto = new CreateTournamentDto
         {
-            Gender = gender,
+            Gender = "male",
             Location = "ФОК",
             MaxTeamsCount = 16,
             MinFemaleCount = 0,
@@ -28,18 +37,6 @@ public class CreateTournamentTests : TournamentServiceTestBase
         
         var newTournamentId = await tournamentsService.CreateTournament(createTournamentDto);
         unitOfWork.SaveChanges();
-        tournamentToDelete.Add(newTournamentId);
-        var tournament = await tournamentsService.GetTournamentResponse(newTournamentId);
-        tournament.Should().NotBeNull();
-    }
-    
-    [TearDown]
-    public async Task TearDown()
-    {
-        foreach (var id in tournamentToDelete)
-            await tournamentsService.DeleteTournament(id);
-        
-        tournamentToDelete.Clear();
-        await unitOfWork.SaveChangesAsync();
+        return newTournamentId;
     }
 }
