@@ -52,18 +52,26 @@ public class GetUserTests : UsersServicesTestBase
         userResponseList.Should().BeEmpty();
     }
 
+    //TODO написать тесты на поиск пользователя
+    [Test]
+    public async Task Should_get_users_by_prefix()
+    {
+        throw new NotImplementedException();
+    }
+
     private async Task<Guid> TestCreateUser()
     {
         var email = MailGeneratorHelper.Generate();
+        var fullname = MockUsersFio.GenerateFullName().Split();
         var user = new CreateUserDto
         {
             Email = email,
-            FirstName = "Тестгета",
+            FirstName = fullname[1],
             Gender = "male",
             GroupNumber = "РИ-220930",
-            LastName = "Тестгета",
+            LastName = fullname[0],
             Password = "!qQqQqQqQqQ322",
-            Patronymic = "Тестгета"
+            Patronymic = fullname[2]
         };
         
         var result = await usersService.CreateUser(user);
