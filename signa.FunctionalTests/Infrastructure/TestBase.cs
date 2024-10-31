@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using signa.DataAccess;
+using signa.FunctionalTests.Helpers;
 using signa.Interfaces;
 using signa.Models;
 using signa.Repositories;
@@ -13,7 +14,8 @@ namespace signa.FunctionalTests;
 
 public class TestBase
 {
-    public IServiceProvider Container { get; }
+    protected IServiceProvider Container { get; }
+    protected UltraMegaSigmaGigaHelper UltraMegaSigmaGigaHelper { get; }
     
     public TestBase()
     {
@@ -36,6 +38,7 @@ public class TestBase
         container.AddScoped<IMatchesService, MatchesService>();
         container.AddScoped<IMatchTeamsService, MatchTeamsService>();
         container.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
+        container.AddScoped<UltraMegaSigmaGigaHelper>();
 
         container.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
         MappingConfig.RegisterMappings();
@@ -58,5 +61,6 @@ public class TestBase
         container.AddUnitOfWork<ApplicationDbContext>();
         
         Container = container.BuildServiceProvider();
+        UltraMegaSigmaGigaHelper = Container.GetRequiredService<UltraMegaSigmaGigaHelper>();
     }
 }
