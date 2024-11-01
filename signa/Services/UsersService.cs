@@ -7,6 +7,7 @@ using signa.Dto;
 using signa.Dto.user;
 using signa.Entities;
 using signa.Interfaces;
+using signa.Models;
 
 namespace signa.Services;
 
@@ -15,11 +16,13 @@ public class UsersService : IUsersService
 {
     private readonly IUserRepository userRepository;
     private readonly ILogger<UsersService> logger;
+    private readonly IJwtProvider jwtProvider;
 
-    public UsersService(IUserRepository userRepository, ILogger<UsersService> logger)
+    public UsersService(IUserRepository userRepository, ILogger<UsersService> logger, IJwtProvider jwtProvider)
     {
         this.userRepository = userRepository;
         this.logger = logger;
+        this.jwtProvider = jwtProvider;
     }
 
     public async Task<UserResponseDto?> GetUserResponse(Guid userId)
@@ -93,4 +96,20 @@ public class UsersService : IUsersService
         logger.LogInformation($"User {userId} deleted");
         return userId;
     }
+
+    public async Task<string> LoginUser(string email, string password)
+    {
+        var query = userRepository.SingleResultQuery()
+            .AndFilter(x => !x.IsDeleted)
+            .AndFilter(x => x.Email == email);
+        var userEntity = await userRepository.FirstOrDefaultAsync(query);
+        
+        var passwordIsCorrect = PasswordHasher.VerifyPassword(password, userEntity.PasswordHash,
+            Convert.FromBase64String(userEntity.PasswordSalt));
+        if(!passwordIsCorrect)
+            throw new UnauthorizedAccessException();
+
+        return jwtProvider.GenerateToken(userEntity);
+    }
 }
+

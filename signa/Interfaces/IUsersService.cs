@@ -12,5 +12,6 @@ public interface IUsersService
     Task<Guid> CreateUser(CreateUserDto newUser);
     Task<Guid> UpdateUser(Guid userId, UpdateUserDto updateUser);
     Task<Guid> DeleteUser(Guid userId);
-    
+    Task<string> LoginUser(string email, string password);
+
 }

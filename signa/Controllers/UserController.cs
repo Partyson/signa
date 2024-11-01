@@ -1,6 +1,5 @@
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using signa.Dto;
 using signa.Dto.user;
 using signa.Interfaces;
 
@@ -19,12 +18,20 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto user)
+        [HttpPost("register")]
+        public async Task<ActionResult> Register([FromBody] CreateUserDto user)
         {
             var userId = await usersService.CreateUser(user);
             await unitOfWork.SaveChangesAsync();
             return Ok(userId);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest userLoginRequest)
+        {
+            var token = await usersService.LoginUser(userLoginRequest.Email, userLoginRequest.Password);
+            Response.Cookies.Append("token", token);
+            return Ok(token);
         }
         
         [HttpGet("{userId}")]
