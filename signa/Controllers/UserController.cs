@@ -21,9 +21,10 @@ namespace signa.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] CreateUserDto user)
         {
-            var userId = await usersService.CreateUser(user);
+            var token = await usersService.CreateUser(user);
             await unitOfWork.SaveChangesAsync();
-            return Ok(userId);
+            Response.Cookies.Append("token", token);
+            return Ok(token);
         }
 
         [HttpPost("login")]

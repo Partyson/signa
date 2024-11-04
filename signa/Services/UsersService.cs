@@ -70,12 +70,12 @@ public class UsersService : IUsersService
         return foundedUsers.Select(x => x.Adapt<UserSearchItemDto>()).ToList();
     }
 
-    public async Task<Guid> CreateUser(CreateUserDto newUser)
+    public async Task<string> CreateUser(CreateUserDto newUser)
     {
         var newUserEntity = newUser.Adapt<UserEntity>();
         var addedUser = await userRepository.AddAsync(newUserEntity);
         logger.LogInformation($"User {addedUser.Id} created");
-        return addedUser.Id;
+        return jwtProvider.GenerateToken(addedUser);
     }
 
     public async Task<Guid> UpdateUser(Guid userId, UpdateUserDto updateUser)
@@ -90,9 +90,9 @@ public class UsersService : IUsersService
 
     public async Task<Guid> DeleteUser(Guid userId)
     {
-        await userRepository.UpdateAsync(
-            x => x.Id == userId, 
-            calls => calls.SetProperty(u => u.IsDeleted, true));
+        var query = userRepository.SingleResultQuery().AndFilter(x => x.Id == userId);
+        var userEntity = await userRepository.FirstOrDefaultAsync(query);
+        userEntity.IsDeleted = true;
         logger.LogInformation($"User {userId} deleted");
         return userId;
     }
