@@ -1,4 +1,6 @@
-﻿namespace signa.Dto.user;
+﻿using signa.Enums;
+
+namespace signa.Dto.user;
 
 public class CreateUserDto
 {
@@ -19,4 +21,6 @@ public class CreateUserDto
     public string Password { get; set; }
     
     public string? PhotoLink { get; set; }
+    
+    public string Role { get; set; }
 }

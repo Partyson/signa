@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Enums\" />
     <Folder Include="Extensions\" />
     <Folder Include="Migrations\" />
   </ItemGroup>

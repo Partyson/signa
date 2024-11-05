@@ -1,4 +1,6 @@
-﻿namespace signa.Entities;
+﻿using signa.Enums;
+
+namespace signa.Entities;
 
 public class UserEntity : BaseEntity
 {
@@ -27,14 +29,14 @@ public class UserEntity : BaseEntity
     public bool IsVerified { get; set; }
     
     public bool IsDeleted { get; set; }
-    
-    public bool IsOrganized { get; set; }
 
     public List<TeamEntity> Teams { get; set; } = [];
     
     public List<TeamEntity> CaptainsTeams { get; set; } = [];
     
     public List<TournamentEntity> OrganizedTournaments { get; set; } = [];
+    
+    public string Role { get; set; }
     
     public string FullName { get; set; }
 }

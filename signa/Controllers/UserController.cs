@@ -1,4 +1,5 @@
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.user;
 using signa.Interfaces;
@@ -42,6 +43,7 @@ namespace signa.Controllers
             return userResponseDto != null ? Ok(userResponseDto) : NotFound();
         }
 
+        [Authorize(Roles = "Admin,User,Organizer")]
         [HttpGet]
         public async Task<ActionResult<List<UserSearchItemDto>>> GetAllUsersByPrefix([FromQuery] string prefix)
         {
@@ -49,6 +51,7 @@ namespace signa.Controllers
             return Ok(foundUsers);
         }
 
+        [Authorize(Roles = "Admin,User,Organizer")]
         [HttpPatch("{userId}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
         {
@@ -57,8 +60,9 @@ namespace signa.Controllers
             return Ok(id);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(Guid userId)
+        public async Task<IActionResult> DeleteUser(Guid userId)
         {
             var deletedUserId = await usersService.DeleteUser(userId);
             await unitOfWork.SaveChangesAsync();
