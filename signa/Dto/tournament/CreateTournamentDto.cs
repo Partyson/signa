@@ -1,4 +1,6 @@
-﻿namespace signa.Dto.tournament;
+﻿using signa.Enums;
+
+namespace signa.Dto.tournament;
 
 public class CreateTournamentDto
 {
@@ -10,7 +12,7 @@ public class CreateTournamentDto
     
     public int TeamsMembersMaxNumber { get; set; }
     
-    public string Gender { get; set; }
+    public TournamentGender Gender { get; set; }
     
     public int MinFemaleCount { get; set; }
     
@@ -22,7 +24,7 @@ public class CreateTournamentDto
     
     public DateTime EndRegistrationAt { get; set; }
     
-    public string State { get; set; }
+    public State State { get; set; }
     
     public string? RegulationLink { get; set; }
 

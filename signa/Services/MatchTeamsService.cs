@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using signa.Dto.match;
 using signa.Dto.team;
 using signa.Entities;
+using signa.Extensions;
 using signa.Interfaces;
 
 namespace signa.Services;
@@ -43,15 +44,3 @@ public class MatchTeamsService : IMatchTeamsService
     }
 }
 
-public static class MatchTeamRepositoryExtensions
-{
-    internal static IMultipleResultQuery<MatchTeamEntity> SearchMatchByIdQuery(this IMatchTeamRepository repository,
-        Guid matchId)
-    {
-        return repository.MultipleResultQuery()
-            .Include(x => 
-                x.Include(x => x.Match)
-                    .Include(x => x.Team))
-            .AndFilter(x => x.Match.Id == matchId);
-    }
-}

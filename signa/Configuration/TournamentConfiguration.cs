@@ -21,5 +21,11 @@ public class TournamentConfiguration : IEntityTypeConfiguration<TournamentEntity
         
         builder.HasMany(t => t.Matches)
             .WithOne(m => m.Tournament);
+        
+        builder.Property(t => t.Gender)
+            .HasConversion<string>();
+        
+        builder.Property(t => t.State)
+            .HasConversion<string>();
     }
 }

@@ -10,7 +10,7 @@ public class CreateUserDto
     
     public string Patronymic { get; set; }
     
-    public string Gender { get; set; }
+    public UserGender Gender { get; set; }
     
     public string GroupNumber { get; set; }
     
@@ -22,5 +22,4 @@ public class CreateUserDto
     
     public string? PhotoLink { get; set; }
     
-    public string Role { get; set; }
 }

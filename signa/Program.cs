@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using EntityFrameworkCore.UnitOfWork.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -37,7 +38,11 @@ builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 MappingConfig.RegisterMappings();
 
@@ -45,7 +50,6 @@ MappingConfig.RegisterMappings();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

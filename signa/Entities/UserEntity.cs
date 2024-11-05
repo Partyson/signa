@@ -12,7 +12,7 @@ public class UserEntity : BaseEntity
     
     public string GroupNumber { get; set; }
     
-    public string Gender { get; set; }
+    public UserGender Gender { get; set; }
     
     public string Email { get; set; }
     
@@ -36,7 +36,7 @@ public class UserEntity : BaseEntity
     
     public List<TournamentEntity> OrganizedTournaments { get; set; } = [];
     
-    public string Role { get; set; }
+    public Role Role { get; set; } = Role.User;
     
     public string FullName { get; set; }
 }

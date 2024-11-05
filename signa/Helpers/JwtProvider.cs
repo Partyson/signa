@@ -8,9 +8,8 @@ using signa.Interfaces;
 
 namespace signa.Helpers;
 
-public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
+public class JwtProvider : IJwtProvider
 {
-    private readonly JwtOptions options = options.Value;
 
     public string GenerateToken(UserEntity user)
     {

@@ -6,6 +6,7 @@ using Mapster;
 using signa.Dto;
 using signa.Dto.user;
 using signa.Entities;
+using signa.Enums;
 using signa.Interfaces;
 using signa.Models;
 
