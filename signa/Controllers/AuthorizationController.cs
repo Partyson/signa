@@ -43,4 +43,12 @@ public class AuthorizationController : ControllerBase
         var userId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
         return Ok(Guid.Parse(userId));
     }
+
+    [Authorize]
+    [HttpPost("logout")]
+    public ActionResult Logout()
+    {
+        Response.Cookies.Delete("token");
+        return Ok("Logged out");
+    }
 }
