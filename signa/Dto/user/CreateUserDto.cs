@@ -20,6 +20,4 @@ public class CreateUserDto
     
     public string Password { get; set; }
     
-    public string? PhotoLink { get; set; }
-    
 }

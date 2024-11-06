@@ -1,8 +1,7 @@
 ﻿using EntityFrameworkCore.Repository;
 using signa.DataAccess;
-using signa.Dto.team;
 using signa.Entities;
-using signa.Interfaces;
+using signa.Interfaces.Repositories;
 
 namespace signa.Repositories;
 

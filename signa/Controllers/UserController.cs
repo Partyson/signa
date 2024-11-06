@@ -1,9 +1,8 @@
-using System.Security.Claims;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.user;
-using signa.Interfaces;
+using signa.Interfaces.Services;
 
 namespace signa.Controllers
 {
@@ -18,38 +17,14 @@ namespace signa.Controllers
             this.usersService = usersService;
             this.unitOfWork = unitOfWork;
         }
-        
-        [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] CreateUserDto user)
-        {
-            var token = await usersService.CreateUser(user);
-            await unitOfWork.SaveChangesAsync();
-            Response.Cookies.Append("token", token);
-            return Ok(token);
-        }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequest userLoginRequest)
-        {
-            var token = await usersService.LoginUser(userLoginRequest.Email, userLoginRequest.Password);
-            Response.Cookies.Append("token", token);
-            return Ok(token);
-        }
-        
         [HttpGet("{userId}")]
         public async Task<ActionResult<UserResponseDto>> Get(Guid userId)
         {
             var userResponseDto =  await usersService.GetUserResponse(userId);
             return userResponseDto != null ? Ok(userResponseDto) : NotFound();
         }
-
-        [Authorize]
-        [HttpGet("get-user-id")]
-        public ActionResult<Guid> GetUserIdFromToken()
-        {
-            var userId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(Guid.Parse(userId));
-        }
+        
 
         [Authorize(Roles = "Admin,User,Organizer")]
         [HttpGet("search")]

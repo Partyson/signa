@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using signa.Entities;
-using signa.Models;
 
 namespace signa.Configuration;
 

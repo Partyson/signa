@@ -1,7 +1,6 @@
-﻿using signa.Dto.match;
-using signa.Dto.team;
+﻿using signa.Dto.team;
 
-namespace signa.Interfaces;
+namespace signa.Interfaces.Services;
 
 public interface IMatchTeamsService
 {

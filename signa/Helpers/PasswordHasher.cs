@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace signa.Models;
+namespace signa.Helpers;
 
 public class PasswordHasher
 {

@@ -6,7 +6,7 @@ using signa.Dto.tournament;
 using signa.Dto.user;
 using signa.Entities;
 
-namespace signa.Models;
+namespace signa.Helpers;
 
 [UsedImplicitly]
 public class MappingConfig

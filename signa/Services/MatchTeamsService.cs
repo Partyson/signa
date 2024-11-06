@@ -1,11 +1,7 @@
-﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
-using LinqKit;
-using Microsoft.EntityFrameworkCore;
-using signa.Dto.match;
-using signa.Dto.team;
-using signa.Entities;
+﻿using signa.Dto.team;
 using signa.Extensions;
-using signa.Interfaces;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 
 namespace signa.Services;
 

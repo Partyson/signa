@@ -1,10 +1,7 @@
-﻿using signa.Dto;
-using signa.Dto.match;
-using signa.Dto.team;
-using signa.Dto.tournament;
+﻿using signa.Dto.tournament;
 using signa.Entities;
 
-namespace signa.Interfaces;
+namespace signa.Interfaces.Services;
 
 public interface ITournamentsService
 {

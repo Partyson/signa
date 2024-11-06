@@ -8,7 +8,8 @@ using Serilog;
 using signa.DataAccess;
 using signa.Helpers;
 using signa.Interfaces;
-using signa.Models;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 using signa.Repositories;
 using signa.Services;
 
@@ -34,6 +35,7 @@ builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IMatchesService, MatchesService>();
 builder.Services.AddScoped<IMatchTeamsService, MatchTeamsService>();
 builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 

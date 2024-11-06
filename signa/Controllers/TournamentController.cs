@@ -1,12 +1,8 @@
 ﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
-using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using signa.Dto;
-using signa.Dto.match;
-using signa.Dto.team;
 using signa.Dto.tournament;
-using signa.Interfaces;
+using signa.Interfaces.Services;
 
 namespace signa.Controllers
 {

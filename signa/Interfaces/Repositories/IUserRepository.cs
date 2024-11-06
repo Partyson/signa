@@ -1,8 +1,6 @@
 ﻿using EntityFrameworkCore.Repository.Interfaces;
-using signa.Dto;
 using signa.Entities;
-using signa.Models;
 
-namespace signa.Interfaces;
+namespace signa.Interfaces.Repositories;
 
 public interface IUserRepository : IRepository<UserEntity>;

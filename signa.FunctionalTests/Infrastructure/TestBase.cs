@@ -5,8 +5,10 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using signa.DataAccess;
 using signa.FunctionalTests.Helpers;
+using signa.Helpers;
 using signa.Interfaces;
-using signa.Models;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 using signa.Repositories;
 using signa.Services;
 

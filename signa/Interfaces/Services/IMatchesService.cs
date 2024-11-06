@@ -1,6 +1,6 @@
 ﻿using signa.Dto.match;
 
-namespace signa.Interfaces;
+namespace signa.Interfaces.Services;
 
 public interface IMatchesService
 {

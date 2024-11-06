@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using signa.Entities;
 using signa.Interfaces;
+using signa.Interfaces.Repositories;
 
 namespace signa.Extensions;
 

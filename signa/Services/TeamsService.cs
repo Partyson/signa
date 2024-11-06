@@ -1,10 +1,9 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
-using signa.Dto;
 using signa.Dto.team;
-using signa.Dto.user;
 using signa.Entities;
-using signa.Interfaces;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 
 namespace signa.Services;
 

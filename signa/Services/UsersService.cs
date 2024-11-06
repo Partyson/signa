@@ -1,14 +1,11 @@
-﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
-using EntityFrameworkCore.UnitOfWork.Interfaces;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using LinqKit;
 using Mapster;
-using signa.Dto;
 using signa.Dto.user;
 using signa.Entities;
-using signa.Enums;
 using signa.Interfaces;
-using signa.Models;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 
 namespace signa.Services;
 
@@ -71,13 +68,7 @@ public class UsersService : IUsersService
         return foundedUsers.Select(x => x.Adapt<UserSearchItemDto>()).ToList();
     }
 
-    public async Task<string> CreateUser(CreateUserDto newUser)
-    {
-        var newUserEntity = newUser.Adapt<UserEntity>();
-        var addedUser = await userRepository.AddAsync(newUserEntity);
-        logger.LogInformation($"User {addedUser.Id} created");
-        return jwtProvider.GenerateToken(addedUser);
-    }
+
 
     public async Task<Guid> UpdateUser(Guid userId, UpdateUserDto updateUser)
     {
@@ -96,21 +87,6 @@ public class UsersService : IUsersService
         userEntity.IsDeleted = true;
         logger.LogInformation($"User {userId} deleted");
         return userId;
-    }
-
-    public async Task<string> LoginUser(string email, string password)
-    {
-        var query = userRepository.SingleResultQuery()
-            .AndFilter(x => !x.IsDeleted)
-            .AndFilter(x => x.Email == email);
-        var userEntity = await userRepository.FirstOrDefaultAsync(query);
-        
-        var passwordIsCorrect = PasswordHasher.VerifyPassword(password, userEntity.PasswordHash,
-            Convert.FromBase64String(userEntity.PasswordSalt));
-        if(!passwordIsCorrect)
-            throw new UnauthorizedAccessException();
-
-        return jwtProvider.GenerateToken(userEntity);
     }
 }
 

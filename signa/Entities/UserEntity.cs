@@ -18,8 +18,6 @@ public class UserEntity : BaseEntity
     
     public string? PhoneNumber { get; set; }
     
-    public string? PhotoLink { get; set; }
-    
     public string? VkLink { get; set; }
     
     public string PasswordHash { get; set; }

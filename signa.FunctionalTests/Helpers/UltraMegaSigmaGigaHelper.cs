@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
 using signa.Dto.tournament;
 using signa.Interfaces;
+using signa.Interfaces.Services;
 
 namespace signa.FunctionalTests.Helpers;
 

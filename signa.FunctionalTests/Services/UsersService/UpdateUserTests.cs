@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using signa.Dto.user;
 using signa.FunctionalTests.Helpers;
-using signa.Models;
+using signa.Helpers;
 
 namespace signa.FunctionalTests.Services.UsersService;
 
