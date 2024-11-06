@@ -15,7 +15,7 @@ public class JwtProvider : IJwtProvider
     {
         var claims = new List<Claim>
         {
-            new (ClaimTypes.Email, user.Id.ToString()),
+            new (ClaimTypes.NameIdentifier, user.Id.ToString()),
             new (ClaimTypes.Role, user.Role.ToString())
         };
         

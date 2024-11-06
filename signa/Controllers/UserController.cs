@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ using signa.Interfaces;
 namespace signa.Controllers
 {
     [ApiController]
-    [Route("user")]
     public class UserController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
@@ -43,8 +43,16 @@ namespace signa.Controllers
             return userResponseDto != null ? Ok(userResponseDto) : NotFound();
         }
 
+        [Authorize]
+        [HttpGet("get-user-id")]
+        public ActionResult<Guid> GetUserIdFromToken()
+        {
+            var userId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(Guid.Parse(userId));
+        }
+
         [Authorize(Roles = "Admin,User,Organizer")]
-        [HttpGet]
+        [HttpGet("search")]
         public async Task<ActionResult<List<UserSearchItemDto>>> GetAllUsersByPrefix([FromQuery] string prefix)
         {
             var foundUsers = await usersService.GetUsersByPrefix(prefix);
