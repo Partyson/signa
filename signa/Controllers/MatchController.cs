@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using signa.Dto.match;
 using signa.Interfaces;
 
@@ -9,31 +10,43 @@ namespace signa.Controllers
     public class MatchController : ControllerBase
     {
         private readonly IMatchesService matchesService;
+        private readonly IUnitOfWork unitOfWork;
 
-        public MatchController(IMatchesService matchesService)
+
+        public MatchController(IMatchesService matchesService, IUnitOfWork unitOfWork)
         {
             this.matchesService = matchesService;
+            this.unitOfWork = unitOfWork;
         }
         
-        [HttpPost("create-matches/{tournamentId}")]
-        public async Task<ActionResult> CreateForTournament([FromRoute] Guid tournamentId)
+        [HttpPost]
+        public async Task<ActionResult> CreateForTournament([FromQuery] Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
+            await unitOfWork.SaveChangesAsync();
             return Ok(matchesId);
         }
 
-        [HttpPatch("{tournamentId}/{matchId}")]
-        public async Task<ActionResult> UpdateMatchResult([FromRoute] Guid matchId,
+        [HttpGet]
+        public async Task<ActionResult<List<MatchResponseDto>>> GetMatchesByTournamentId([FromQuery] Guid tournamentId)
+        {
+            var matches = await matchesService.GetMatchesByTournamentId(tournamentId);
+            return Ok(matches);
+        }
+
+        [HttpPatch]
+        public async Task<ActionResult> UpdateMatchResult([FromQuery] Guid matchId,
             [FromBody] UpdateMatchResultDto updateMatchResultDto)
         {
             var updatedMatchId = await matchesService.UpdateResult(matchId, updateMatchResultDto);
+            unitOfWork.SaveChanges();
             return Ok(updatedMatchId);
         }
 
-        [HttpPatch("{tournamentId}")]
-        public async Task<ActionResult> SwapTeams([FromRoute] Guid tournamentId, [FromBody] SwapTeamDto swapTeams)
+        [HttpPatch("swap-teams")]
+        public async Task<ActionResult> SwapTeams([FromBody] SwapTeamDto swapTeams)
         {
-            var matchWithSwappedTeamsId = await matchesService.SwapTeams(tournamentId, swapTeams.matchTeam1, swapTeams.matchTeam2);
+            var matchWithSwappedTeamsId = await matchesService.SwapTeams(swapTeams.matchTeam1, swapTeams.matchTeam2);
             return Ok(matchWithSwappedTeamsId);
         }
 

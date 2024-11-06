@@ -1,6 +1,9 @@
+using EntityFrameworkCore.Repository.Extensions;
+using EntityFrameworkCore.UnitOfWork.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using signa.DataAccess;
+using signa.Entities;
 using signa.Interfaces;
 using signa.Models;
 using signa.Repositories;
@@ -27,6 +30,8 @@ builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ITeamsService, TeamsService>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IMatchesService, MatchesService>();
+builder.Services.AddScoped<IMatchTeamsService, MatchTeamsService>();
+builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
 
 builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 builder.Services.AddControllers();
@@ -48,9 +53,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             logging.AddDebug();
         }));
 });
+builder.Services.AddScoped<DbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+builder.Services.AddUnitOfWork();
+builder.Services.AddUnitOfWork<ApplicationDbContext>();
 
 var app = builder.Build();
-
 
 using var scope = app.Services.CreateScope();
 using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -60,8 +67,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 }
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseHttpsRedirection();
 

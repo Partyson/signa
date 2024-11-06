@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
 using signa.Dto.match;
 using signa.Dto.team;
 using signa.Dto.tournament;
@@ -12,63 +13,70 @@ public class TournamentsService : ITournamentsService
     private readonly ITournamentRepository tournamentRepository;
     private readonly ILogger<TournamentsService> logger;
 
-    public TournamentsService(ITournamentRepository tournamentRepository, ILogger<TournamentsService> logger)
+    public TournamentsService(ITournamentRepository tournamentRepository,
+        ILogger<TournamentsService> logger)
     {
         this.tournamentRepository = tournamentRepository;
         this.logger = logger;
     }
 
 
-    public async Task<TournamentInfoDto?> GetTournament(Guid tournamentId)
+    public async Task<TournamentInfoDto?> GetTournamentResponse(Guid tournamentId)
     {
-        var tournament = await tournamentRepository.Get(tournamentId);
-        return tournament.Adapt<TournamentInfoDto>();
+        var tournamentEntity = await GetTournament(tournamentId);
+        return tournamentEntity.Adapt<TournamentInfoDto>();
+    }
+
+    public async Task<TournamentEntity?> GetTournament(Guid tournamentId)
+    {
+        var query = tournamentRepository.SingleResultQuery()
+            .Include(x => 
+                x.Include(x => x.Teams))
+            .AndFilter(x => x.Id == tournamentId);
+        var tournamentEntity = await tournamentRepository.FirstOrDefaultAsync(query);
+        if (tournamentEntity == null)
+        {
+            logger.LogWarning("Tournament not found from database");
+            return null;
+        }
+
+        logger.LogInformation($"Tournament {tournamentEntity.Id} is retrieved from database");
+        return tournamentEntity;
     }
 
     public async Task<List<TournamentListItemDto>> GetAllTournaments()
     {
-        var tournaments = await tournamentRepository.GetAll();
-        logger.LogInformation($"Tournaments: {tournaments.Count}");
+        var query = tournamentRepository.MultipleResultQuery();
+        var tournaments = await tournamentRepository.SearchAsync(query);
+        logger.LogInformation($"Tournaments count: {tournaments.Count}");
         return tournaments.Adapt<List<TournamentListItemDto>>();
-    }
-
-    public async Task<List<MatchResponseDto>> GetMatches(Guid tournamentId)
-    {
-        var tournament = await tournamentRepository.Get(tournamentId);
-        return tournament.Matches.Adapt<List<MatchResponseDto>>();
-    }
-
-    public async Task<List<TeamResponseDto>> GetTeams(Guid tournamentId)
-    {
-        var tournament = await tournamentRepository.Get(tournamentId);
-        return tournament.Teams.Adapt<List<TeamResponseDto>>();
     }
 
     public async Task<Guid> CreateTournament(CreateTournamentDto newTournament)
     {
-        var tournamentEntity = newTournament.Adapt<TournamentEntity>();
-        tournamentEntity.Id = Guid.NewGuid();
-        tournamentEntity.CreatedAt = DateTime.Now;
-        tournamentEntity.UpdatedAt = tournamentEntity.CreatedAt;
-        var id = await tournamentRepository.Create(tournamentEntity);
-        logger.LogInformation($"Tournament {tournamentEntity.Id} created");
-        return id;
+        var newTournamentEntity = newTournament.Adapt<TournamentEntity>();
+        var addedTournament = await tournamentRepository.AddAsync(newTournamentEntity);
+        logger.LogInformation($"Tournament {newTournamentEntity.Id} created");
+        return addedTournament.Id;
     }
 
     public async Task<Guid> UpdateTournament(Guid tournamentId, UpdateTournamentDto updateTournament)
     {
-        var newTournamentEntity = updateTournament.Adapt<TournamentEntity>();
-        newTournamentEntity.Id = tournamentId;
-        var updatedTournamentId = await tournamentRepository.Update(newTournamentEntity);
-        logger.LogInformation($"Tournament {updatedTournamentId} updated");
-        return updatedTournamentId;
+        var query = tournamentRepository.SingleResultQuery().AndFilter(x => x.Id == tournamentId);
+        var userEntity = await tournamentRepository.FirstOrDefaultAsync(query);
+        updateTournament.Adapt(userEntity);
+        userEntity.UpdatedAt = DateTime.Now;
+        logger.LogInformation($"User {tournamentId} updated");
+        return tournamentId;
     }
 
     public async Task<Guid> DeleteTournament(Guid tournamentId)
     {
-        var id = await tournamentRepository.Delete(tournamentId);
-        logger.LogInformation($"Tournament {id} deleted");
+        var query = tournamentRepository.SingleResultQuery().AndFilter(x => x.Id == tournamentId);
+        var teamEntity = await tournamentRepository.FirstOrDefaultAsync(query);
+        tournamentRepository.Remove(teamEntity);
+        logger.LogInformation($"Team {tournamentId} deleted");
         
-        return id;
+        return tournamentId;
     }
 }
