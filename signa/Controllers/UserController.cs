@@ -26,7 +26,7 @@ namespace signa.Controllers
         }
         
 
-        [Authorize(Roles = "Admin,User,Organizer")]
+        [Authorize]
         [HttpGet("search")]
         public async Task<ActionResult<List<UserSearchItemDto>>> GetAllUsersByPrefix([FromQuery] string prefix)
         {
@@ -34,7 +34,7 @@ namespace signa.Controllers
             return Ok(foundUsers);
         }
 
-        [Authorize(Roles = "Admin,User,Organizer")]
+        [Authorize]
         [HttpPatch("{userId}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
         {

@@ -19,7 +19,7 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
-        [Authorize(Roles = "Admin,Organizer,User")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTeamDto team)
         {
@@ -42,7 +42,7 @@ namespace signa.Controllers
             return Ok(teams);
         }
 
-        [Authorize(Roles = "Admin,Organizer,User")]
+        [Authorize]
         [HttpPatch("{teamId}")]
         public async Task<IActionResult> Update(Guid teamId, [FromBody] UpdateTeamDto team)
         {

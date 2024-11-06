@@ -29,7 +29,7 @@ namespace signa.Controllers
             return Ok(matchesId);
         }
 
-        [Authorize(Roles = "Admin,Organizer,User")]
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<MatchResponseDto>>> GetMatchesByTournamentId([FromQuery] Guid tournamentId)
         {
