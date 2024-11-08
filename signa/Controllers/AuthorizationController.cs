@@ -45,6 +45,16 @@ public class AuthorizationController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet("get-role")]
+    public ActionResult<string> GetRoleFromToken()
+    {
+        var role = User.FindFirstValue(ClaimTypes.Role);
+        if (role == "Admin")
+            role = "User";
+        return Ok(role);
+    }
+
+    [Authorize]
     [HttpPost("logout")]
     public ActionResult Logout()
     {
