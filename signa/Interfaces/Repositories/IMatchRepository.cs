@@ -1,7 +1,6 @@
 ﻿using EntityFrameworkCore.Repository.Interfaces;
-using signa.Dto.match;
 using signa.Entities;
 
-namespace signa.Interfaces;
+namespace signa.Interfaces.Repositories;
 
 public interface IMatchRepository : IRepository<MatchEntity>;

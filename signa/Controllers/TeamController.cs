@@ -1,8 +1,8 @@
 ﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using signa.Dto;
 using signa.Dto.team;
-using signa.Interfaces;
+using signa.Interfaces.Services;
 
 namespace signa.Controllers
 {
@@ -19,6 +19,7 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTeamDto team)
         {
@@ -41,6 +42,7 @@ namespace signa.Controllers
             return Ok(teams);
         }
 
+        [Authorize]
         [HttpPatch("{teamId}")]
         public async Task<IActionResult> Update(Guid teamId, [FromBody] UpdateTeamDto team)
         {
@@ -48,7 +50,7 @@ namespace signa.Controllers
             await unitOfWork.SaveChangesAsync();
             return Ok(updatedTeamId);
         }
-
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpDelete("{teamId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid teamId)
         {

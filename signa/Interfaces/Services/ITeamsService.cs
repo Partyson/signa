@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using signa.Dto;
-using signa.Dto.team;
-using signa.Entities;
+﻿using signa.Dto.team;
 
-namespace signa.Interfaces;
+namespace signa.Interfaces.Services;
 
 public interface ITeamsService
 {

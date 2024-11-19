@@ -1,11 +1,8 @@
 ﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
-using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using signa.Dto;
-using signa.Dto.match;
-using signa.Dto.team;
 using signa.Dto.tournament;
-using signa.Interfaces;
+using signa.Interfaces.Services;
 
 namespace signa.Controllers
 {
@@ -21,7 +18,7 @@ namespace signa.Controllers
             this.tournamentsService = tournamentsService;
             this.unitOfWork = unitOfWork;
         }
-        
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTournamentDto tournament)
         {
@@ -44,6 +41,7 @@ namespace signa.Controllers
             return Ok(tournaments);
         }
 
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPatch("{tournamentId}")]
         public async Task<IActionResult> Update(Guid tournamentId, [FromBody] UpdateTournamentDto tournament)
         {
@@ -52,6 +50,7 @@ namespace signa.Controllers
             return Ok(updatedTournamentId);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{tournamentId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid tournamentId)
         {

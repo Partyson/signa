@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using FluentAssertions;
-using signa.Models;
+using signa.Helpers;
 
 namespace signa.UnitTests;
 
@@ -19,7 +19,7 @@ public class PasswordHasherTests
     public void VerifyPasswordHashingTest()
     {
         var salt = PasswordHasher.GenerateSalt();
-        var password = "password";
+        var password = "!qQqQqQqQ322";
         var passwordHash = PasswordHasher.HashPassword(password, salt);
         var saltInDb = Convert.ToBase64String(salt);
         PasswordHasher.VerifyPassword(password, passwordHash, Convert.FromBase64String(saltInDb))

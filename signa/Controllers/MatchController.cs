@@ -1,7 +1,8 @@
 ﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.match;
-using signa.Interfaces;
+using signa.Interfaces.Services;
 
 namespace signa.Controllers
 {
@@ -19,6 +20,7 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPost]
         public async Task<ActionResult> CreateForTournament([FromQuery] Guid tournamentId)
         {
@@ -27,6 +29,7 @@ namespace signa.Controllers
             return Ok(matchesId);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<MatchResponseDto>>> GetMatchesByTournamentId([FromQuery] Guid tournamentId)
         {
@@ -34,6 +37,7 @@ namespace signa.Controllers
             return Ok(matches);
         }
 
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPatch]
         public async Task<ActionResult> UpdateMatchResult([FromQuery] Guid matchId,
             [FromBody] UpdateMatchResultDto updateMatchResultDto)
@@ -43,6 +47,7 @@ namespace signa.Controllers
             return Ok(updatedMatchId);
         }
 
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPatch("swap-teams")]
         public async Task<ActionResult> SwapTeams([FromBody] SwapTeamDto swapTeams)
         {
@@ -50,6 +55,7 @@ namespace signa.Controllers
             return Ok(matchWithSwappedTeamsId);
         }
 
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPost("{matchId}")]
         public async Task<ActionResult> FinishMatch([FromRoute] Guid matchId)
         {

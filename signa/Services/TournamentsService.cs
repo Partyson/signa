@@ -1,10 +1,9 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
-using signa.Dto.match;
-using signa.Dto.team;
 using signa.Dto.tournament;
 using signa.Entities;
-using signa.Interfaces;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 
 namespace signa.Services;
 
@@ -26,12 +25,16 @@ public class TournamentsService : ITournamentsService
         var tournamentEntity = await GetTournament(tournamentId);
         return tournamentEntity.Adapt<TournamentInfoDto>();
     }
-
+    
     public async Task<TournamentEntity?> GetTournament(Guid tournamentId)
     {
         var query = tournamentRepository.SingleResultQuery()
             .Include(x => 
-                x.Include(x => x.Teams))
+                x.Include(x => x.Teams)
+                    .ThenInclude(x=>x.Members)
+                    .Include(x=>x.Organizers)
+                    .Include(x=>x.Matches)
+                    .ThenInclude(x=>x.Teams))
             .AndFilter(x => x.Id == tournamentId);
         var tournamentEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         if (tournamentEntity == null)
@@ -66,7 +69,7 @@ public class TournamentsService : ITournamentsService
         var userEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         updateTournament.Adapt(userEntity);
         userEntity.UpdatedAt = DateTime.Now;
-        logger.LogInformation($"User {tournamentId} updated");
+        logger.LogInformation($"Tournament {tournamentId} updated");
         return tournamentId;
     }
 
@@ -75,7 +78,7 @@ public class TournamentsService : ITournamentsService
         var query = tournamentRepository.SingleResultQuery().AndFilter(x => x.Id == tournamentId);
         var teamEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         tournamentRepository.Remove(teamEntity);
-        logger.LogInformation($"Team {tournamentId} deleted");
+        logger.LogInformation($"Tournament {tournamentId} deleted");
         
         return tournamentId;
     }

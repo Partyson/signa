@@ -1,10 +1,7 @@
-﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
-using LinqKit;
-using Microsoft.EntityFrameworkCore;
-using signa.Dto.match;
-using signa.Dto.team;
-using signa.Entities;
-using signa.Interfaces;
+﻿using signa.Dto.team;
+using signa.Extensions;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 
 namespace signa.Services;
 
@@ -43,15 +40,3 @@ public class MatchTeamsService : IMatchTeamsService
     }
 }
 
-public static class MatchTeamRepositoryExtensions
-{
-    internal static IMultipleResultQuery<MatchTeamEntity> SearchMatchByIdQuery(this IMatchTeamRepository repository,
-        Guid matchId)
-    {
-        return repository.MultipleResultQuery()
-            .Include(x => 
-                x.Include(x => x.Match)
-                    .Include(x => x.Team))
-            .AndFilter(x => x.Match.Id == matchId);
-    }
-}

@@ -1,12 +1,11 @@
-﻿using EntityFrameworkCore.QueryBuilder.Interfaces;
-using EntityFrameworkCore.UnitOfWork.Interfaces;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using LinqKit;
 using Mapster;
-using signa.Dto;
 using signa.Dto.user;
 using signa.Entities;
 using signa.Interfaces;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 
 namespace signa.Services;
 
@@ -15,11 +14,13 @@ public class UsersService : IUsersService
 {
     private readonly IUserRepository userRepository;
     private readonly ILogger<UsersService> logger;
+    private readonly IJwtProvider jwtProvider;
 
-    public UsersService(IUserRepository userRepository, ILogger<UsersService> logger)
+    public UsersService(IUserRepository userRepository, ILogger<UsersService> logger, IJwtProvider jwtProvider)
     {
         this.userRepository = userRepository;
         this.logger = logger;
+        this.jwtProvider = jwtProvider;
     }
 
     public async Task<UserResponseDto?> GetUserResponse(Guid userId)
@@ -57,13 +58,17 @@ public class UsersService : IUsersService
         return userEntities.ToList();
     }
 
-    public async Task<Guid> CreateUser(CreateUserDto newUser)
+    public async Task<List<UserSearchItemDto>> GetUsersByPrefix(string prefix)
     {
-        var newUserEntity = newUser.Adapt<UserEntity>();
-        var addedUser = await userRepository.AddAsync(newUserEntity);
-        logger.LogInformation($"User {newUserEntity.Id} created");
-        return addedUser.Id;
+        var query = userRepository.MultipleResultQuery()
+            .AndFilter(x => x.FullName.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(x => x.FullName)
+            .Page(1, 7);
+        var foundedUsers = await userRepository.SearchAsync(query);
+        return foundedUsers.Select(x => x.Adapt<UserSearchItemDto>()).ToList();
     }
+
+
 
     public async Task<Guid> UpdateUser(Guid userId, UpdateUserDto updateUser)
     {
@@ -77,10 +82,11 @@ public class UsersService : IUsersService
 
     public async Task<Guid> DeleteUser(Guid userId)
     {
-        await userRepository.UpdateAsync(
-            x => x.Id == userId, 
-            calls => calls.SetProperty(u => u.IsDeleted, true));
+        var query = userRepository.SingleResultQuery().AndFilter(x => x.Id == userId);
+        var userEntity = await userRepository.FirstOrDefaultAsync(query);
+        userEntity.IsDeleted = true;
         logger.LogInformation($"User {userId} deleted");
         return userId;
     }
 }
+

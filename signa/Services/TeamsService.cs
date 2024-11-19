@@ -1,10 +1,9 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
-using signa.Dto;
 using signa.Dto.team;
-using signa.Dto.user;
 using signa.Entities;
-using signa.Interfaces;
+using signa.Interfaces.Repositories;
+using signa.Interfaces.Services;
 
 namespace signa.Services;
 
@@ -37,7 +36,7 @@ public class TeamsService : ITeamsService
             return null;
         }
 
-        logger.LogInformation($"User {teamEntity.Id} is retrieved from database");
+        logger.LogInformation($"Team {teamEntity.Id} is retrieved from database");
         return teamEntity.Adapt<TeamResponseDto>();
     }
 
