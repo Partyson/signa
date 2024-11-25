@@ -25,7 +25,7 @@ public class UserEntity : BaseEntity
     public string PasswordSalt { get; set; }
 
     public bool IsVerified { get; set; }
-    
+
     public bool IsDeleted { get; set; }
 
     public List<TeamEntity> Teams { get; set; } = [];

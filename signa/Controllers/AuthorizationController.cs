@@ -3,6 +3,7 @@ using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.user;
+using signa.Validators;
 using IAuthorizationService = signa.Interfaces.Services.IAuthorizationService;
 
 namespace signa.Controllers;
@@ -12,17 +13,25 @@ public class AuthorizationController : ControllerBase
 {
     private readonly IAuthorizationService authorizationService;
     private readonly IUnitOfWork unitOfWork;
-
-    public AuthorizationController(IAuthorizationService authorizationService, IUnitOfWork unitOfWork)
+    private readonly UserValidator validator;
+    public AuthorizationController(IAuthorizationService authorizationService, IUnitOfWork unitOfWork,
+        UserValidator validator)
     {
         this.authorizationService = authorizationService;
         this.unitOfWork = unitOfWork;
+        this.validator = validator;
     }
     
     [HttpPost("register")]
     public async Task<ActionResult> Register([FromBody] CreateUserDto user)
     {
+        var validationResult = await validator.ValidateAsync(user);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.ToString(Environment.NewLine));
+        
         var token = await authorizationService.RegisterUser(user);
+        if (token == null)
+            return BadRequest("Email уже используется.");
         await unitOfWork.SaveChangesAsync();
         Response.Cookies.Append("token", token);
         return Ok(token);

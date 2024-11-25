@@ -5,6 +5,7 @@ using signa.Helpers;
 using signa.Interfaces;
 using signa.Interfaces.Repositories;
 using signa.Interfaces.Services;
+using signa.Validators;
 
 namespace signa.Services;
 
@@ -14,16 +15,24 @@ public class AuthorizationService : IAuthorizationService
     private readonly ILogger<AuthorizationService> logger;
     private readonly IJwtProvider jwtProvider;
 
-    public AuthorizationService(IUserRepository userRepository, ILogger<AuthorizationService> logger, IJwtProvider jwtProvider)
+    public AuthorizationService(IUserRepository userRepository, ILogger<AuthorizationService> logger,
+        IJwtProvider jwtProvider, UserValidator validator)
     {
         this.userRepository = userRepository;
         this.logger = logger;
         this.jwtProvider = jwtProvider;
     }
 
-    public async Task<string> RegisterUser(CreateUserDto newUser)
+    public async Task<string?> RegisterUser(CreateUserDto newUser)
     {
         var newUserEntity = newUser.Adapt<UserEntity>();
+        
+        var query = userRepository.SingleResultQuery()
+            .AndFilter(x => x.Email == newUser.Email);
+        var userWithCurrentEmail = await userRepository.FirstOrDefaultAsync(query);
+        if (userWithCurrentEmail != null)
+            return null;
+        
         var addedUser = await userRepository.AddAsync(newUserEntity);
         logger.LogInformation($"User {addedUser.Id} created");
         return jwtProvider.GenerateToken(addedUser);
