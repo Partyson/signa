@@ -8,7 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 {
     public void Configure(EntityTypeBuilder<UserEntity> builder)
     {
-        builder.HasKey(x => new {x.Id, x.Email});
+        builder.HasKey(x => x.Id);
         builder.HasMany(u => u.Teams)
             .WithMany(t => t.Members);
         

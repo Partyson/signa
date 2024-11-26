@@ -6,5 +6,4 @@ namespace signa.Extensions;
 
 public static class ValidatorsExtensions
 {
-    
 }

@@ -36,23 +36,21 @@ public class UserValidator : AbstractValidator<CreateUserDto>
             .WithMessage("Неверный формат группы.");
 
         RuleFor(user => user.PhoneNumber)
-            .Matches(@"^(8\d{10}|\+7\d{10})$").When(x => x.PhoneNumber != null)
+            .Matches(@"^(8\d{10}|\+7\d{10})$").When(x => x.PhoneNumber != "")
             .WithMessage("Неверный формат номера телефона.");
 
         RuleFor(user => user.Email)
             .NotNull()
             .EmailAddress()
             .WithMessage("Некорректный email адрес.");
-        
+
         RuleFor(user => user.Password)
             .NotEmpty().WithMessage("Пароль обязателен.")
             .MinimumLength(8).WithMessage("Пароль должен быть не менее 8 символов.")
             .Matches(@"^[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':\""|,.<>\/?`~]+$").WithMessage("Недопустимые символы.")
             .Matches(@"[A-Z]").WithMessage("Пароль должен содержать хотя бы одну заглавную букву.")
             .Matches(@"[a-z]").WithMessage("Пароль должен содержать хотя бы одну строчную букву.")
-            .Matches(@"\d").WithMessage("Пароль должен содержать хотя бы одну цифру.")
-            .Matches(@"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?`~]").WithMessage("Пароль должен содержать хотя бы один специальный символ.");
-
+            .Matches(@"\d").WithMessage("Пароль должен содержать хотя бы одну цифру.");
         RuleFor(user => user.VkLink)
             .Matches(@"^(https?:\/\/)?(www\.)?vk\.com\/[a-zA-Z0-9_.]+$")
             .When(x => x.VkLink != null)
