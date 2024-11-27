@@ -24,7 +24,7 @@ public class TournamentValidator : AbstractValidator<CreateTournamentDto>
         
         RuleFor(t => t.ChatLink)
             .Matches(@"^(https?:\/\/)?(www\.)?vk\.com\/join\/[a-zA-Z0-9_.]+$")
-            .When(x => x.ChatLink != null)
+            .When(x => x.ChatLink != "")
             .WithMessage("Неверно указана ссылка на беседу вк.");
 
         RuleFor(t => t.MinFemaleCount)
@@ -35,5 +35,8 @@ public class TournamentValidator : AbstractValidator<CreateTournamentDto>
         RuleFor(t => t.TeamsMembersMinNumber)
             .Must((t, teamsMembersMinNumber) =>
                 teamsMembersMinNumber < t.TeamsMembersMaxNumber);
+        
+        RuleFor(t => t.Location)
+            .Matches(@"^[А-Яа-яёЁ\s]+$").WithMessage("Неверный формат места проведения турнира.");
     }
 }

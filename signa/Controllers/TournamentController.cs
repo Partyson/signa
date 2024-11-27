@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.tournament;
 using signa.Interfaces.Services;
+using signa.Validators;
 
 namespace signa.Controllers
 {
@@ -12,16 +13,22 @@ namespace signa.Controllers
     {
         private readonly ITournamentsService tournamentsService;
         private readonly IUnitOfWork unitOfWork;
+        private readonly TournamentValidator validator;
 
-        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork)
+        public TournamentController(ITournamentsService tournamentsService, IUnitOfWork unitOfWork, TournamentValidator tournamentValidator)
         {
             this.tournamentsService = tournamentsService;
             this.unitOfWork = unitOfWork;
+            this.validator = tournamentValidator;
         }
         [Authorize(Roles = "Admin,Organizer")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTournamentDto tournament)
         {
+            var validationResult = await validator.ValidateAsync(tournament);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.ToString(Environment.NewLine));
+            
             var tournamentId = await tournamentsService.CreateTournament(tournament);
             await unitOfWork.SaveChangesAsync();
             return Ok(tournamentId);
