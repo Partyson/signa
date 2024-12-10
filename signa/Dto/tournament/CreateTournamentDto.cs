@@ -12,6 +12,8 @@ public class CreateTournamentDto
     
     public int TeamsMembersMaxNumber { get; set; }
     
+    public int TeamsMembersMinNumber { get; set; }
+    
     public TournamentGender Gender { get; set; }
     
     public int MinFemaleCount { get; set; }

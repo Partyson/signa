@@ -20,6 +20,8 @@ public class TournamentInfoDto
     
     public int MaxTeamsCount { get; set; }
     
+    public int TeamsMembersMaxNumber { get; set; }
+    
     public DateTime StartedAt { get; set; }
     
     public DateTime EndRegistrationAt { get; set; }

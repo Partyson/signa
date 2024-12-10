@@ -12,6 +12,7 @@ using signa.Interfaces.Repositories;
 using signa.Interfaces.Services;
 using signa.Repositories;
 using signa.Services;
+using signa.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,8 @@ builder.Services.AddScoped<IMatchesService, MatchesService>();
 builder.Services.AddScoped<IMatchTeamsService, MatchTeamsService>();
 builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+builder.Services.AddScoped<UserValidator>();
+builder.Services.AddScoped<TournamentValidator>();
 
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
