@@ -23,6 +23,28 @@ public class TeamsService : ITeamsService
         this.usersService = usersService;
     }
 
+    public async Task<TeamEntity> GetTeamEntity(Guid teamId)
+    {
+        var query = teamRepository.SingleResultQuery()
+            .Include(x => 
+                x.Include(y => y.Members)
+                    .Include(y => y.Captain))
+            .AndFilter(x => x.Id == teamId);
+        var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
+        return teamEntity;
+    }
+    
+    public async Task<TeamEntity> GetTeamEntityByCaptainId(Guid captainId)
+    {
+        var query = teamRepository.SingleResultQuery()
+            .AndFilter(x => x.Captain.Id == captainId)
+            .Include(x =>
+                x.Include(y => y.Invites)
+                    .ThenInclude(y => y.InvitedUser));
+        var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
+        return teamEntity;
+    }
+
     public async Task<TeamResponseDto?> GetTeam(Guid teamId)
     {
         var query = teamRepository.SingleResultQuery()
@@ -57,10 +79,7 @@ public class TeamsService : ITeamsService
 
     public async Task<Guid> CreateTeam(CreateTeamDto newTeam)
     {
-        var members = await usersService.GetUserEntitiesByIds(newTeam.MembersId);
-        if (members.Count < newTeam.MembersId.Count)
-            throw new Exception("Sosal?");
-        var capitan = members.First(x => x.Id == newTeam.CaptainId);
+        var capitan = await usersService.GetUser(newTeam.CaptainId);
         var tournament = await tournamentsService.GetTournament(newTeam.TournamentId);
         if (tournament == null)
             throw new Exception("Tournament not found");
@@ -68,7 +87,6 @@ public class TeamsService : ITeamsService
         var newTeamEntity = new TeamEntity
         {
             Title = newTeam.Title,
-            Members = members,
             Captain = capitan,
             Tournament = tournament
         };

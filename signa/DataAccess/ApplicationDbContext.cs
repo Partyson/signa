@@ -20,6 +20,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     
     public DbSet<SocialMediaLinkEntity> SocialMediaLinks { get; set; }
     
+    public DbSet<InviteEntity> Invites { get; set; }
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,5 +29,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.ApplyConfiguration(new TournamentConfiguration());
         modelBuilder.ApplyConfiguration(new TeamConfiguration());
         modelBuilder.ApplyConfiguration(new MatchConfiguration());
+        modelBuilder.ApplyConfiguration(new InviteConfiguration());
     }
 }

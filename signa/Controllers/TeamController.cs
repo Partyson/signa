@@ -50,6 +50,7 @@ namespace signa.Controllers
             await unitOfWork.SaveChangesAsync();
             return Ok(updatedTeamId);
         }
+        
         [Authorize(Roles = "Admin,Organizer")]
         [HttpDelete("{teamId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid teamId)

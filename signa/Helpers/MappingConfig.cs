@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Mapster;
+using signa.Dto.invite;
 using signa.Dto.match;
 using signa.Dto.team;
 using signa.Dto.tournament;
@@ -62,6 +63,17 @@ public class MappingConfig
                 src => src.Teams.Select(t => t.Members.Count).Sum())
             .Map(dest => dest.Members,
                 src => src.Teams.SelectMany(t => t.Members).Adapt<List<UserResponseDto>>().ToList());
+
+        TypeAdapterConfig<InviteEntity, InviteResponseDto>
+            .NewConfig()
+            .Map(dest => dest.WhoInviteFirstName, src => src.InviteTeam.Captain.FirstName)
+            .Map(dest => dest.WhoInviteLastName, src => src.InviteTeam.Captain.LastName)
+            .Map(dest => dest.TeamTitle, src => src.InviteTeam.Title);
+        TypeAdapterConfig<InviteEntity, SentInviteDto>
+            .NewConfig()
+            .Map(dest => dest.State, src => src.State)
+            .Map(dest => dest.InvitedUserFisrtName, src => src.InvitedUser.FirstName)
+            .Map(dest => dest.InvitedUserLastName, src => src.InvitedUser.LastName);
     }
 
     private static TeamInMatchResponseDto CreateTeamInMatchDto(MatchEntity match, TeamEntity team)

@@ -17,6 +17,9 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         
         builder.HasMany(u => u.OrganizedTournaments)
             .WithMany(t => t.Organizers);
+
+        builder.HasMany(u => u.Invites)
+            .WithOne(i => i.InvitedUser);
         
         builder.Property(x => x.FirstName)
             .IsRequired();
