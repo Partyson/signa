@@ -41,6 +41,7 @@ builder.Services.AddScoped<IInvitesService, InvitesesService>();
 builder.Services.AddScoped<IInviteRepository, InviteRepository>();
 builder.Services.AddScoped<IGroupsService, GroupsService>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IDownloadsService, DownloadsService>();
 builder.Services.AddScoped<UserValidator>();
 builder.Services.AddScoped<TournamentValidator>();
 

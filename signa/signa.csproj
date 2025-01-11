@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
     <PackageReference Include="EntityFrameworkCore.Data.Repository" Version="8.0.2" />
     <PackageReference Include="EntityFrameworkCore.Data.UnitOfWork" Version="8.0.2" />
     <PackageReference Include="EntityFrameworkCore.Exceptions.MySQL.Pomelo" Version="8.0.0" />
