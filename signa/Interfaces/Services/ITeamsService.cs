@@ -7,6 +7,7 @@ public interface ITeamsService
 {
     Task<TeamResponseDto?> GetTeam(Guid teamId);
     Task<TeamEntity> GetTeamEntity(Guid teamId);
+    Task<List<TeamEntity>> GetTeamEntitiesByIds(List<Guid> teamIds);
     Task<TeamEntity> GetTeamEntityByCaptainId(Guid captainId);
     Task<List<TeamResponseDto>> GetTeamsByTournamentId(Guid tournamentId);
     Task<Guid> CreateTeam(CreateTeamDto newTeam);

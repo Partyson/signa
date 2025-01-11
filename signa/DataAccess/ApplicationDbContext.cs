@@ -30,5 +30,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.ApplyConfiguration(new TeamConfiguration());
         modelBuilder.ApplyConfiguration(new MatchConfiguration());
         modelBuilder.ApplyConfiguration(new InviteConfiguration());
+        modelBuilder.ApplyConfiguration(new GroupConfiguration());
     }
 }

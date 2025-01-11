@@ -9,13 +9,13 @@ using signa.Interfaces.Services;
 
 namespace signa.Services;
 
-public class InviteService : IInviteService
+public class InvitesesService : IInvitesService
 {
     private readonly IInviteRepository inviteRepository;
     private readonly ITeamsService teamsService;
     private readonly IUsersService usersService;
 
-    public InviteService(IInviteRepository inviteRepository, ITeamsService teamsService, IUsersService usersService)
+    public InvitesesService(IInviteRepository inviteRepository, ITeamsService teamsService, IUsersService usersService)
     {
         this.inviteRepository = inviteRepository;
         this.teamsService = teamsService;

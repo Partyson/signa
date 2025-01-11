@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Mapster;
+using signa.Dto.group;
 using signa.Dto.invite;
 using signa.Dto.match;
 using signa.Dto.team;
@@ -74,6 +75,10 @@ public class MappingConfig
             .Map(dest => dest.State, src => src.State)
             .Map(dest => dest.InvitedUserFisrtName, src => src.InvitedUser.FirstName)
             .Map(dest => dest.InvitedUserLastName, src => src.InvitedUser.LastName);
+        TypeAdapterConfig<GroupEntity, GroupResponseDto>
+            .NewConfig()
+            .Map(dest => dest.Title, src => src.Title)
+            .Map(dest => dest.Teams, src => CreateListTeamInGroupDto(src));
     }
 
     private static TeamInMatchResponseDto CreateTeamInMatchDto(MatchEntity match, TeamEntity team)
@@ -86,5 +91,23 @@ public class MappingConfig
             .Select(mt => mt.Score)
             .FirstOrDefault();
         return teamInMatch;
+    }
+
+    private static List<TeamInGroupResponseDto> CreateListTeamInGroupDto(GroupEntity group)
+    {
+        var teamsInGroup = new List<TeamInGroupResponseDto>();
+        foreach (var team in group.Teams)
+        {
+            var groupMatchesIds = team.Matches
+                .Where(m => m.Group != null)
+                .Select(m => m.Id);
+            var teamInGroup = team.Adapt<TeamResponseDto>().Adapt<TeamInGroupResponseDto>();
+            teamInGroup.Score = team.MatchTeams
+                .Where(mt => groupMatchesIds.Contains(mt.Match.Id))
+                .Select(mt => mt.Score)
+                .Sum();
+            teamsInGroup.Add(teamInGroup);
+        }
+        return teamsInGroup;
     }
 }

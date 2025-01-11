@@ -33,6 +33,17 @@ public class TeamsService : ITeamsService
         var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
         return teamEntity;
     }
+
+    public async Task<List<TeamEntity>> GetTeamEntitiesByIds(List<Guid> teamIds)
+    {
+        var query = teamRepository.MultipleResultQuery()
+            .AndFilter(x => teamIds.Contains(x.Id))
+            .Include(x =>
+                x.Include(y => y.Members)
+                    .Include(y => y.Captain));
+        var teamEntities = await teamRepository.SearchAsync(query);
+        return teamEntities.ToList();
+    }
     
     public async Task<TeamEntity> GetTeamEntityByCaptainId(Guid captainId)
     {
@@ -47,11 +58,7 @@ public class TeamsService : ITeamsService
 
     public async Task<TeamResponseDto?> GetTeam(Guid teamId)
     {
-        var query = teamRepository.SingleResultQuery()
-            .Include(x => 
-                x.Include(y => y.Members).Include(y => y.Captain))
-            .AndFilter(x => x.Id == teamId);
-        var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
+        var teamEntity = await GetTeamEntity(teamId);
         if (teamEntity == null)
         {
             logger.LogWarning("Team not found from database");

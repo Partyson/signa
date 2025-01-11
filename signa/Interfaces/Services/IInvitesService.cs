@@ -3,7 +3,7 @@ using signa.Enums;
 
 namespace signa.Interfaces.Services;
 
-public interface IInviteService
+public interface IInvitesService
 {
     Task<List<InviteResponseDto>> GetInvitesResponse(Guid invitedUserId);
     

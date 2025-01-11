@@ -3,4 +3,4 @@ using signa.Entities;
 
 namespace signa.Interfaces.Repositories;
 
-public interface IInviteRepository : IRepository<InviteEntity>;
+public interface IGroupRepository : IRepository<GroupEntity>;

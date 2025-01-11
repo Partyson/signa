@@ -10,21 +10,30 @@ namespace signa.Controllers;
 [Route("invites")]
 public class InviteController : ControllerBase
 {
-    private readonly IInviteService inviteService;
+    private readonly IInvitesService invitesService;
     private readonly IUnitOfWork unitOfWork;
 
 
-    public InviteController(IInviteService inviteService, IUnitOfWork unitOfWork)
+    public InviteController(IInvitesService invitesService, IUnitOfWork unitOfWork)
     {
-        this.inviteService = inviteService;
+        this.invitesService = invitesService;
         this.unitOfWork = unitOfWork;
+    }
+    
+    [Authorize]
+    [HttpPost("{teamId}")]
+    public async Task<IActionResult> Create(Guid teamId, [FromBody] List<Guid> invitedUsers)
+    {
+        var invitesId = await invitesService.CreateInvites(teamId, invitedUsers);
+        await unitOfWork.SaveChangesAsync();
+        return Ok(invitesId);
     }
 
     [Authorize]
     [HttpGet("{invitedUserId}")]
     public async Task<ActionResult<List<InviteResponseDto>>> GetUsersInvite(Guid invitedUserId)
     {
-        var invites =  await inviteService.GetInvitesResponse(invitedUserId);
+        var invites =  await invitesService.GetInvitesResponse(invitedUserId);
         return invites.Count != 0 ? Ok(invites) : NotFound();
     }
 
@@ -32,24 +41,15 @@ public class InviteController : ControllerBase
     [HttpGet("{captainId}/sent")]
     public async Task<ActionResult<List<SentInviteDto>>> GetSentInvites(Guid captainId)
     {
-        var invites = await inviteService.GetSentInvites(captainId);
+        var invites = await invitesService.GetSentInvites(captainId);
         return invites.Count != 0 ? Ok(invites) : NotFound();
-    }
-
-    [Authorize]
-    [HttpPost("{teamId}")]
-    public async Task<IActionResult> Create(Guid teamId, [FromBody] List<Guid> invitedUsers)
-    {
-        var invitesId = await inviteService.CreateInvites(teamId, invitedUsers);
-        await unitOfWork.SaveChangesAsync();
-        return Ok(invitesId);
     }
     
     [Authorize]
     [HttpPatch("{inviteId}/accept")]
     public async Task<IActionResult> Accept(Guid inviteId)
     {
-        var acceptedInviteId = await inviteService.AcceptInvite(inviteId);
+        var acceptedInviteId = await invitesService.AcceptInvite(inviteId);
         return Ok(acceptedInviteId);
     }
 
@@ -57,7 +57,7 @@ public class InviteController : ControllerBase
     [HttpPatch("{inviteId}/discard")]
     public async Task<IActionResult> Discard(Guid inviteId)
     {
-        var discardedInviteId = await inviteService.DiscardInvite(inviteId);
+        var discardedInviteId = await invitesService.DiscardInvite(inviteId);
         return Ok(discardedInviteId);
     }
 }

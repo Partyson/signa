@@ -37,8 +37,10 @@ builder.Services.AddScoped<IMatchesService, MatchesService>();
 builder.Services.AddScoped<IMatchTeamsService, MatchTeamsService>();
 builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
-builder.Services.AddScoped<IInviteService, InviteService>();
+builder.Services.AddScoped<IInvitesService, InvitesesService>();
 builder.Services.AddScoped<IInviteRepository, InviteRepository>();
+builder.Services.AddScoped<IGroupsService, GroupsService>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<UserValidator>();
 builder.Services.AddScoped<TournamentValidator>();
 

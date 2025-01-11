@@ -29,7 +29,8 @@ public class MatchesService : IMatchesService
     {
         var query = matchRepository.MultipleResultQuery()
             .Include(x => x.Include(x => x.Teams))
-            .AndFilter(x => x.Tournament.Id == tournamentId);
+            .AndFilter(x => x.Tournament.Id == tournamentId)
+            .AndFilter(x => x.Group == null);
         var matches = await matchRepository.SearchAsync(query);
         if(matches.Count == 0)
             logger.LogWarning($"No matches found for tournament {tournamentId}");
@@ -46,10 +47,38 @@ public class MatchesService : IMatchesService
             .ConnectMatches()
             .AddTeams(tournament.Teams)
             .ToList();
-
+        var groupMatches = CreateGroupMatches(tournament.Groups, tournament);
+        matches = matches.Concat(groupMatches).ToList();
         await matchRepository.AddRangeAsync(matches);
-        logger.LogInformation($"Created {matches.Count} matches for tournament {tournamentId}");
+        
+        logger.LogInformation($"Created {matches.Count} matches  for tournament {tournamentId}");
         return matches.Select(m => m.Id).ToList();
+    }
+
+    private static List<MatchEntity> CreateGroupMatches(List<GroupEntity> groups, TournamentEntity tournament)
+    {
+        var groupMatches = new List<MatchEntity>();
+        foreach (var group in groups)
+        {
+            var groupTeams = group.Teams;
+            var currentIndex = 0;
+            while (currentIndex < groupTeams.Count - 1)
+            {
+                var step = 1;
+                while (currentIndex + step < groupTeams.Count)
+                {
+                    groupMatches.Add(new MatchEntity
+                    {
+                        Tournament = tournament,
+                        Group = group,
+                        Teams = [groupTeams[currentIndex], groupTeams[currentIndex + step]]
+                    });
+                    step++;
+                }
+                currentIndex++;
+            }
+        }
+        return groupMatches;
     }
 
     public async Task<Guid> UpdateResult(Guid matchId, UpdateMatchResultDto updateMatchResultDto)

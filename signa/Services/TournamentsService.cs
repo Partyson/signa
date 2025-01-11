@@ -30,11 +30,13 @@ public class TournamentsService : ITournamentsService
     {
         var query = tournamentRepository.SingleResultQuery()
             .Include(x => 
-                x.Include(x => x.Teams)
-                    .ThenInclude(x=>x.Members)
-                    .Include(x=>x.Organizers)
-                    .Include(x=>x.Matches)
-                    .ThenInclude(x=>x.Teams))
+                x.Include(t => t.Teams)
+                    .ThenInclude(team=>team.Members)
+                    .Include(t=>t.Organizers)
+                    .Include(t => t.Groups)
+                    .ThenInclude(g => g.Teams)
+                    .Include(t=>t.Matches)
+                    .ThenInclude(m=> m.Teams))
             .AndFilter(x => x.Id == tournamentId);
         var tournamentEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         if (tournamentEntity == null)
