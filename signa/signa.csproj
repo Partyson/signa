@@ -13,6 +13,7 @@
     <PackageReference Include="EntityFrameworkCore.Data.Repository" Version="8.0.2" />
     <PackageReference Include="EntityFrameworkCore.Data.UnitOfWork" Version="8.0.2" />
     <PackageReference Include="EntityFrameworkCore.Exceptions.MySQL.Pomelo" Version="8.0.0" />
+    <PackageReference Include="ErrorOr" Version="2.0.1" />
     <PackageReference Include="FluentValidation" Version="11.10.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
     <PackageReference Include="Mapster" Version="7.4.0" />

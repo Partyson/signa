@@ -42,12 +42,12 @@ public class MatchesService : IMatchesService
     {
 
         var tournament = await tournamentsService.GetTournament(tournamentId);
-        var matches = Enumerable.Range(0, tournament.Teams.Count - 1)
-            .Select(_ => new MatchEntity { Tournament = tournament })
+        var matches = Enumerable.Range(0, tournament.Value.Teams.Count - 1)
+            .Select(_ => new MatchEntity { Tournament = tournament.Value })
             .ConnectMatches()
-            .AddTeams(tournament.Teams)
+            .AddTeams(tournament.Value.Teams)
             .ToList();
-        var groupMatches = CreateGroupMatches(tournament.Groups, tournament);
+        var groupMatches = CreateGroupMatches(tournament.Value.Groups, tournament.Value);
         matches = matches.Concat(groupMatches).ToList();
         await matchRepository.AddRangeAsync(matches);
         

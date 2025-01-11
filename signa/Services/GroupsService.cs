@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ErrorOr;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using signa.Dto.group;
@@ -23,14 +24,16 @@ public class GroupsService : IGroupsService
         this.teamsService = teamsService;
     }
 
-    public async Task<List<Guid>> CreateGroups(CreateGroupDto createGroupDto)
+    public async Task<ErrorOr<List<Guid>>> CreateGroups(CreateGroupDto createGroupDto)
     {
         var tournament = await tournamentsService.GetTournament(createGroupDto.TournamentId);
+        if (tournament.IsError)
+            return tournament.FirstError;
         var groups = Enumerable.Range(0, createGroupDto.GroupCount)
-            .Select(x => new GroupEntity{Tournament = tournament, Title = $"Группа {x + 1}"}).ToList();
+            .Select(x => new GroupEntity{Tournament = tournament.Value, Title = $"Группа {x + 1}"}).ToList();
         var teams = await teamsService.GetTeamEntitiesByIds(createGroupDto.TeamsIds);
         var groupIndex = 0;
-        foreach (var teamEntity in teams)
+        foreach (var teamEntity in teams.Value)
         {
             groups[groupIndex].Teams.Add(teamEntity);
             groupIndex = groupIndex + 1 == createGroupDto.GroupCount ? 0 : groupIndex + 1;

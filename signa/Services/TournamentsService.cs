@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using ErrorOr;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using signa.Dto.tournament;
 using signa.Entities;
@@ -26,7 +27,7 @@ public class TournamentsService : ITournamentsService
         return tournamentEntity.Adapt<TournamentInfoDto>();
     }
     
-    public async Task<TournamentEntity?> GetTournament(Guid tournamentId)
+    public async Task<ErrorOr<TournamentEntity>> GetTournament(Guid tournamentId)
     {
         var query = tournamentRepository.SingleResultQuery()
             .Include(x => 
@@ -41,8 +42,9 @@ public class TournamentsService : ITournamentsService
         var tournamentEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         if (tournamentEntity == null)
         {
-            logger.LogWarning("Tournament not found from database");
-            return null;
+            logger.LogWarning($"Tournament {tournamentId} not found from database");
+            return Error.NotFound("General.NotFound",
+                $"Tournament {tournamentId} not found from database");
         }
 
         logger.LogInformation($"Tournament {tournamentEntity.Id} is retrieved from database");

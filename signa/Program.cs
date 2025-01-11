@@ -44,6 +44,7 @@ builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IDownloadsService, DownloadsService>();
 builder.Services.AddScoped<UserValidator>();
 builder.Services.AddScoped<TournamentValidator>();
+builder.Services.AddScoped<TeamValidator>();
 
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 

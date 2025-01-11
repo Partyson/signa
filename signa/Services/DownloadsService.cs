@@ -1,6 +1,7 @@
 ﻿using signa.Interfaces.Services;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using ErrorOr;
 using signa.Entities;
 
 namespace signa.Services;
@@ -14,10 +15,12 @@ public class DownloadsService : IDownloadsService
         this.tournamentsService = tournamentsService;
     }
 
-    public async Task<byte[]> DownloadTournamentPlayers(Guid tournamentId)
+    public async Task<ErrorOr<byte[]>> DownloadTournamentPlayers(Guid tournamentId)
     {
         var tournament = await tournamentsService.GetTournament(tournamentId);
-        var users = tournament.Teams.SelectMany(x => x.Members).ToList();
+        if (tournament.IsError)
+            return tournament.FirstError;
+        var users = tournament.Value.Teams.SelectMany(x => x.Members).ToList();
         return GenerateDocx(users);
     }
 

@@ -1,6 +1,8 @@
-﻿namespace signa.Interfaces.Services;
+﻿using ErrorOr;
+
+namespace signa.Interfaces.Services;
 
 public interface IDownloadsService
 {
-    Task<byte[]> DownloadTournamentPlayers(Guid tournamentId);
+    Task<ErrorOr<byte[]>> DownloadTournamentPlayers(Guid tournamentId);
 }

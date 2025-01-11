@@ -1,8 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.Net;
+using System.Security.Claims;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.user;
+using signa.Extensions;
 using signa.Validators;
 using IAuthorizationService = signa.Interfaces.Services.IAuthorizationService;
 
@@ -30,10 +32,10 @@ public class AuthorizationController : ControllerBase
             return BadRequest(validationResult.ToString(Environment.NewLine));
         
         var token = await authorizationService.RegisterUser(user);
-        if (token == null)
-            return BadRequest("Email уже используется.");
+        if (token.IsError)
+            return Problem(token.FirstError.Description, statusCode: token.FirstError.Type.ToStatusCode());
         await unitOfWork.SaveChangesAsync();
-        Response.Cookies.Append("token", token);
+        Response.Cookies.Append("token", token.Value);
         return Ok(token);
     }
 
@@ -41,7 +43,9 @@ public class AuthorizationController : ControllerBase
     public async Task<IActionResult> Login([FromBody] UserLoginRequest userLoginRequest)
     {
         var token = await authorizationService.LoginUser(userLoginRequest.Email, userLoginRequest.Password);
-        Response.Cookies.Append("token", token);
+        if(token.IsError)
+            return Problem(token.FirstError.Description, statusCode: token.FirstError.Type.ToStatusCode());
+        Response.Cookies.Append("token", token.Value);
         return Ok(token);
     }
     
