@@ -32,7 +32,7 @@ public class TournamentsService : ITournamentsService
         var query = tournamentRepository.SingleResultQuery()
             .Include(x => 
                 x.Include(t => t.Teams)
-                    .ThenInclude(team=>team.Members)
+                    .ThenInclude(team => team.Members)
                     .Include(t=>t.Organizers)
                     .Include(t => t.Groups)
                     .ThenInclude(g => g.Teams)

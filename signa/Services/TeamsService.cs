@@ -106,6 +106,7 @@ public class TeamsService : ITeamsService
         {
             Title = newTeam.Title,
             Captain = capitan.Value,
+            Members = [capitan.Value],
             Tournament = tournament.Value,
         };
         var addedTeamEntity = await teamRepository.AddAsync(newTeamEntity);
