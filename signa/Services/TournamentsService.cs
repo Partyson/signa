@@ -24,7 +24,7 @@ public class TournamentsService : ITournamentsService
     public async Task<TournamentInfoDto?> GetTournamentResponse(Guid tournamentId)
     {
         var tournamentEntity = await GetTournament(tournamentId);
-        return tournamentEntity.Adapt<TournamentInfoDto>();
+        return tournamentEntity.Value.Adapt<TournamentInfoDto>();
     }
     
     public async Task<ErrorOr<TournamentEntity>> GetTournament(Guid tournamentId)
