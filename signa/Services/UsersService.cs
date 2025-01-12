@@ -27,7 +27,7 @@ public class UsersService : IUsersService
     public async Task<UserResponseDto?> GetUserResponse(Guid userId)
     {
         var user = await GetUser(userId);
-        return user.Adapt<UserResponseDto>();
+        return user.Value.Adapt<UserResponseDto>();
     }
 
     public async Task<ErrorOr<UserEntity>> GetUser(Guid userId)
