@@ -35,7 +35,15 @@ public class AuthorizationController : ControllerBase
         if (token.IsError)
             return Problem(token.FirstError.Description, statusCode: token.FirstError.Type.ToStatusCode());
         await unitOfWork.SaveChangesAsync();
-        Response.Cookies.Append("token", token.Value);
+        var cookieOptions = new CookieOptions
+        {
+            Expires = DateTime.UtcNow.AddHours(12), // Куки будет жить 12 часов
+            HttpOnly = true, // Защита от доступа через JavaScript
+            Secure = false,
+            MaxAge = TimeSpan.FromDays(7),
+            SameSite = SameSiteMode.Strict // Защита от CSRF-атак
+        };
+        Response.Cookies.Append("token", token.Value, cookieOptions);
         return Ok(token);
     }
 
@@ -45,7 +53,15 @@ public class AuthorizationController : ControllerBase
         var token = await authorizationService.LoginUser(userLoginRequest.Email, userLoginRequest.Password);
         if(token.IsError)
             return Problem(token.FirstError.Description, statusCode: token.FirstError.Type.ToStatusCode());
-        Response.Cookies.Append("token", token.Value);
+        var cookieOptions = new CookieOptions
+        {
+            Expires = DateTime.UtcNow.AddHours(12), // Куки будет жить 12 часов
+            HttpOnly = true, // Защита от доступа через JavaScript
+            Secure = false,
+            MaxAge = TimeSpan.FromDays(7),
+            SameSite = SameSiteMode.Strict // Защита от CSRF-атак
+        };
+        Response.Cookies.Append("token", token.Value, cookieOptions);
         return Ok(token);
     }
     
