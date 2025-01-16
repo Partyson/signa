@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using ErrorOr;
+using JetBrains.Annotations;
 using LinqKit;
 using Mapster;
 using signa.Dto.user;
@@ -26,10 +27,10 @@ public class UsersService : IUsersService
     public async Task<UserResponseDto?> GetUserResponse(Guid userId)
     {
         var user = await GetUser(userId);
-        return user.Adapt<UserResponseDto>();
+        return user.Value.Adapt<UserResponseDto>();
     }
 
-    public async Task<UserEntity> GetUser(Guid userId)
+    public async Task<ErrorOr<UserEntity>> GetUser(Guid userId)
     {
         var query = userRepository.SingleResultQuery()
             .AndFilter(x => !x.IsDeleted)
@@ -38,7 +39,7 @@ public class UsersService : IUsersService
         if (userEntity == null)
         {
             logger.LogWarning("User not found from database");
-            return null;
+            return Error.NotFound("General.NotFound", $"User {userId} not found");
         }
 
         logger.LogInformation($"User {userEntity.Id} is retrieved from database");

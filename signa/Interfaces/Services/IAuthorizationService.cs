@@ -1,11 +1,12 @@
-﻿using signa.Dto.user;
+﻿using ErrorOr;
+using signa.Dto.user;
 
 namespace signa.Interfaces.Services;
 
 public interface IAuthorizationService
 {
-    Task<string?> RegisterUser(CreateUserDto newUser);
-    Task<string> LoginUser(string email, string password);
+    Task<ErrorOr<string>> RegisterUser(CreateUserDto newUser);
+    Task<ErrorOr<string>> LoginUser(string email, string password);
 
 
 }
