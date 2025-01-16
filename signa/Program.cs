@@ -12,6 +12,7 @@ using signa.Interfaces.Services;
 using signa.Repositories;
 using signa.Services;
 using signa.Validators;
+using Microsoft.AspNetCore.CookiePolicy;
 
 namespace signa;
 
@@ -120,6 +121,13 @@ public static class Program
         }
 
         app.UseCors(x => x.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            MinimumSameSitePolicy = SameSiteMode.Strict,
+            HttpOnly = HttpOnlyPolicy.Always,
+            Secure = CookieSecurePolicy.None
+        });
 
         app.UseAuthentication();
         app.UseAuthorization();
