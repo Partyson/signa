@@ -1,0 +1,3 @@
+[submodule "signa-front"]
+	path = signa-front
+	url = https://github.com/Concheliga/signa-front.git
