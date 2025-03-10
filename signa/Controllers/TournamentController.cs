@@ -19,7 +19,7 @@ namespace signa.Controllers
         {
             this.tournamentsService = tournamentsService;
             this.unitOfWork = unitOfWork;
-            this.validator = tournamentValidator;
+            validator = tournamentValidator;
         }
         [Authorize(Roles = "Admin,Organizer")]
         [HttpPost]
