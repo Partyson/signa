@@ -34,6 +34,8 @@ public class UserEntity : BaseEntity
     
     public List<TournamentEntity> OrganizedTournaments { get; set; } = [];
     
+    public List<InviteEntity> Invites { get; set; } = [];
+    
     public Role Role { get; set; } = Role.User;
     
     public string FullName { get; set; }

@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using ErrorOr;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using signa.Dto.tournament;
 using signa.Entities;
@@ -23,24 +24,27 @@ public class TournamentsService : ITournamentsService
     public async Task<TournamentInfoDto?> GetTournamentResponse(Guid tournamentId)
     {
         var tournamentEntity = await GetTournament(tournamentId);
-        return tournamentEntity.Adapt<TournamentInfoDto>();
+        return tournamentEntity.Value.Adapt<TournamentInfoDto>();
     }
     
-    public async Task<TournamentEntity?> GetTournament(Guid tournamentId)
+    public async Task<ErrorOr<TournamentEntity>> GetTournament(Guid tournamentId)
     {
         var query = tournamentRepository.SingleResultQuery()
             .Include(x => 
-                x.Include(x => x.Teams)
-                    .ThenInclude(x=>x.Members)
-                    .Include(x=>x.Organizers)
-                    .Include(x=>x.Matches)
-                    .ThenInclude(x=>x.Teams))
+                x.Include(t => t.Teams)
+                    .ThenInclude(team => team.Members)
+                    .Include(t=>t.Organizers)
+                    .Include(t => t.Groups)
+                    .ThenInclude(g => g.Teams)
+                    .Include(t=>t.Matches)
+                    .ThenInclude(m=> m.Teams))
             .AndFilter(x => x.Id == tournamentId);
         var tournamentEntity = await tournamentRepository.FirstOrDefaultAsync(query);
         if (tournamentEntity == null)
         {
-            logger.LogWarning("Tournament not found from database");
-            return null;
+            logger.LogWarning($"Tournament {tournamentId} not found from database");
+            return Error.NotFound("General.NotFound",
+                $"Tournament {tournamentId} not found from database");
         }
 
         logger.LogInformation($"Tournament {tournamentEntity.Id} is retrieved from database");
