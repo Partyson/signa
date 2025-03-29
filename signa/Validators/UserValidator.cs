@@ -34,11 +34,7 @@ public class UserValidator : AbstractValidator<CreateUserDto>
             .NotNull().WithMessage("Группа не может быть null.")
             .Matches(@"^(РИ|НМТ|ФО|МЕН|СТ|УГИ|ЭУ|ФК|ФТ|Х|ПШ|ЭН)-\d{6}$")
             .WithMessage("Неверный формат группы.");
-
-        RuleFor(user => user.PhoneNumber)
-            .Matches(@"^(8\d{10}|\+7\d{10})$").When(x => x.PhoneNumber != "")
-            .WithMessage("Неверный формат номера телефона.");
-
+            
         RuleFor(user => user.Email)
             .NotNull()
             .EmailAddress()
