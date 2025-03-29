@@ -7,15 +7,17 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ENV ASPNETCORE_ENVIRONMENT=Docker
+ENV ASPNETCORE_URLS=http://+:8080
 
 # Этот этап используется для сборки проекта службы
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["signa/signa.csproj", "signa/"]
+COPY ["signa.csproj", "signa/"]
 RUN dotnet restore "./signa/signa.csproj"
-COPY . .
 WORKDIR "/src/signa"
+COPY . .
 RUN dotnet build "./signa.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап

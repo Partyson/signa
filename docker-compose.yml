@@ -21,6 +21,8 @@ services:
       interval: 10s
       retries: 5
       start_period: 30s
+    networks:
+      - app_network
 
   backend:
     container_name: backend_service
@@ -32,6 +34,12 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    volumes:
+      - ./signa/appsettings.Docker.json:/app/appsettings.Docker.json
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    networks:
+      - app_network
 
   frontend:
     container_name: frontend_service
@@ -42,3 +50,9 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

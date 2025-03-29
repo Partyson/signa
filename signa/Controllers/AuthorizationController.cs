@@ -43,7 +43,7 @@ public class AuthorizationController : ControllerBase
             SameSite = SameSiteMode.Strict // Защита от CSRF-атак
         };
         Response.Cookies.Append("token", token.Value, cookieOptions);
-        return Ok(token);
+        return Ok(token.Value);
     }
 
     [HttpPost("login")]
@@ -61,7 +61,7 @@ public class AuthorizationController : ControllerBase
             SameSite = SameSiteMode.Strict // Защита от CSRF-атак
         };
         Response.Cookies.Append("token", token.Value, cookieOptions);
-        return Ok(token);
+        return Ok(token.Value);
     }
     
     [Authorize]

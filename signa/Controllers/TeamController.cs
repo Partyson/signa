@@ -36,7 +36,7 @@ namespace signa.Controllers
             if (teamId.IsError)
                 return Problem(teamId.FirstError.Description, statusCode: teamId.FirstError.Type.ToStatusCode());
             await unitOfWork.SaveChangesAsync();
-            return Ok(teamId);
+            return Ok(teamId.Value);
         }
         
         [HttpGet("{teamId}")]
