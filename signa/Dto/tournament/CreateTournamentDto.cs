@@ -19,7 +19,7 @@ public class CreateTournamentDto
     public int MinFemaleCount { get; set; }
     
     public int MinMaleCount { get; set; }
-    
+
     public int MaxTeamsCount { get; set; }
     
     public DateTime StartedAt { get; set; }

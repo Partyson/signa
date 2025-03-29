@@ -114,7 +114,7 @@ public static class Program
         using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         context.Database.Migrate();
 // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() || builder.Environment.EnvironmentName == "Docker")
         {
             app.UseSwagger();
             app.UseSwaggerUI();

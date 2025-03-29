@@ -9,7 +9,7 @@ public class TournamentValidator : AbstractValidator<CreateTournamentDto>
     public TournamentValidator()
     {
         RuleFor(t => t.Title)
-            .Matches(@"^[А-Яа-яёЁ\s]+$").WithMessage("Неверный формат названия турнира.");
+            .Matches(@"^.{1,64}$").WithMessage("Неверный формат названия турнира.");
         
         RuleFor(t => t.SportType)
             .Matches(@"^[а-яё]+$").WithMessage("Неверный формат названия вида спорта.");
@@ -23,7 +23,7 @@ public class TournamentValidator : AbstractValidator<CreateTournamentDto>
             .WithMessage("Неверная дата конца регистрации на турнир");
         
         RuleFor(t => t.ChatLink)
-            .Matches(@"^(https?:\/\/)?(www\.)?vk\.com\/join\/[a-zA-Z0-9_.]+$")
+            .Matches(@"^.{1,64}$") // TODO: заглушка, валидировать иначе
             .When(x => x.ChatLink != "")
             .WithMessage("Неверно указана ссылка на беседу вк.");
 
@@ -32,11 +32,25 @@ public class TournamentValidator : AbstractValidator<CreateTournamentDto>
                 minFemaleCount + t.MinMaleCount == t.TeamsMembersMinNumber)
             .WithMessage("Сумма минимального кол-ва парней и девушек не равна минимальному кол-ву участников в команде.");
 
+        RuleFor(t => t.TeamsMembersMaxNumber)
+            .Must(teamsMembersMaxNumber =>
+                teamsMembersMaxNumber > 0)
+            .WithMessage("Максимальное число участников в команде должно быть больше нуля.");
+
         RuleFor(t => t.TeamsMembersMinNumber)
             .Must((t, teamsMembersMinNumber) =>
-                teamsMembersMinNumber < t.TeamsMembersMaxNumber);
+                teamsMembersMinNumber < t.TeamsMembersMaxNumber)
+            .WithMessage("Минимальное число участников в команде больше максимального.")
+            .Must(teamsMembersMinNumber => 
+                teamsMembersMinNumber >= 0)
+            .WithMessage("Минимальное число участников в команде должно быть больше или равно нулю.");
+
+        RuleFor(t => t.MaxTeamsCount)
+            .Must((maxTeamsCount) =>
+                maxTeamsCount >= 0) // Если 0 - считаем, что число команд неограничено 
+            .WithMessage("Максимальное количество команд должно быть больше или равно нулю.");
         
         RuleFor(t => t.Location)
-            .Matches(@"^[А-Яа-яёЁ\s]+$").WithMessage("Неверный формат места проведения турнира.");
+            .Matches(@"^.{1,64}$").WithMessage("Неверный формат места проведения турнира.");
     }
 }

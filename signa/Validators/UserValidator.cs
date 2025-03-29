@@ -32,7 +32,7 @@ public class UserValidator : AbstractValidator<CreateUserDto>
         RuleFor(user => user.GroupNumber)
             .NotEmpty().WithMessage("Группа не может быть пустой.")
             .NotNull().WithMessage("Группа не может быть null.")
-            .Matches(@"^(РИ|НМТ|ФО|МЕН|СТ|УГИ|ЭУ|ФК|ФТ|Х|ПШ|ЭН)-\d{6}$")
+            .Matches(@"^(РИ|НМТ|ФО|МЕН|СТ|УГИ|ЭУ|ФК|ФТ|Х|ПШ|ЭН|РИМ|НМТМ|ФОМ|МЕНМ|СТМ|УГИМ|ЭУМ|ФКМ|ФТМ|ХМ|ПШМ|ЭНМ)-\d{6}$")
             .WithMessage("Неверный формат группы.");
             
         RuleFor(user => user.Email)

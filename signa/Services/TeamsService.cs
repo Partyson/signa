@@ -101,7 +101,8 @@ public class TeamsService : ITeamsService
         var tournament = await tournamentsService.GetTournament(newTeam.TournamentId);
         if (tournament.IsError)
             return tournament.FirstError;
-
+        if (tournament.Value.MaxTeamsCount != 0 && tournament.Value.MaxTeamsCount < tournament.Value.Teams.Count)
+            return Error.Failure("General.Failure", "На турнир больше нет мест.");
         var newTeamEntity = new TeamEntity
         {
             Title = newTeam.Title,
