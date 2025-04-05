@@ -88,7 +88,7 @@ public class InvitesesService : IInvitesService
         var inviteEntity = await inviteRepository.FirstOrDefaultAsync(query);
         
         if (inviteEntity == null)
-            return Error.NotFound($"Can't find invite by id {inviteId}"); 
+            return Error.NotFound("General.NotFound", $"Can't find invite by id {inviteId}"); 
         
         inviteEntity.State = InviteState.Discarded;
         inviteEntity.UpdatedAt = DateTime.Now;
