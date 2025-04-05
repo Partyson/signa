@@ -21,9 +21,13 @@ public class TournamentsService : ITournamentsService
     }
 
 
-    public async Task<TournamentInfoDto?> GetTournamentResponse(Guid tournamentId)
+    public async Task<ErrorOr<TournamentInfoDto?>> GetTournamentResponse(Guid tournamentId)
     {
         var tournamentEntity = await GetTournament(tournamentId);
+
+        if (tournamentEntity.IsError)
+            return tournamentEntity.FirstError;
+        
         return tournamentEntity.Value.Adapt<TournamentInfoDto>();
     }
     
@@ -59,28 +63,40 @@ public class TournamentsService : ITournamentsService
         return tournaments.Adapt<List<TournamentListItemDto>>();
     }
 
-    public async Task<Guid> CreateTournament(CreateTournamentDto newTournament)
+    public async Task<ErrorOr<Guid>> CreateTournament(CreateTournamentDto newTournament)
     {
         var newTournamentEntity = newTournament.Adapt<TournamentEntity>();
         var addedTournament = await tournamentRepository.AddAsync(newTournamentEntity);
+
+        if (addedTournament == null)
+            return Error.Failure("General.Failure", "Can't create tournament");
+        
         logger.LogInformation($"Tournament {newTournamentEntity.Id} created");
         return addedTournament.Id;
     }
 
-    public async Task<Guid> UpdateTournament(Guid tournamentId, UpdateTournamentDto updateTournament)
+    public async Task<ErrorOr<Guid>> UpdateTournament(Guid tournamentId, UpdateTournamentDto updateTournament)
     {
         var query = tournamentRepository.SingleResultQuery().AndFilter(x => x.Id == tournamentId);
         var userEntity = await tournamentRepository.FirstOrDefaultAsync(query);
+
+        if (userEntity == null)
+            return Error.NotFound("General.NotFound", $"Tournament {tournamentId} not found");
+        
         updateTournament.Adapt(userEntity);
         userEntity.UpdatedAt = DateTime.Now;
         logger.LogInformation($"Tournament {tournamentId} updated");
         return tournamentId;
     }
 
-    public async Task<Guid> DeleteTournament(Guid tournamentId)
+    public async Task<ErrorOr<Guid>> DeleteTournament(Guid tournamentId)
     {
         var query = tournamentRepository.SingleResultQuery().AndFilter(x => x.Id == tournamentId);
         var teamEntity = await tournamentRepository.FirstOrDefaultAsync(query);
+        
+        if (teamEntity == null)
+            return Error.NotFound("General.NotFound", $"Tournament {tournamentId} not found");
+        
         tournamentRepository.Remove(teamEntity);
         logger.LogInformation($"Tournament {tournamentId} deleted");
         

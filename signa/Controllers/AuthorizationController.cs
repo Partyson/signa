@@ -77,7 +77,7 @@ public class AuthorizationController : ControllerBase
     public ActionResult<string> GetRoleFromToken()
     {
         var role = User.FindFirstValue(ClaimTypes.Role);
-        if (role == "Admin")
+        if (role == "Admin") // Вернем любую роль кроме админа, для безопасности (?)
             role = "User";
         return Ok(role);
     }

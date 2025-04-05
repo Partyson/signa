@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.invite;
 using signa.Enums;
+using signa.Extensions;
 using signa.Interfaces.Services;
 
 namespace signa.Controllers;
@@ -25,8 +26,13 @@ public class InviteController : ControllerBase
     public async Task<IActionResult> Create(Guid teamId, [FromBody] List<Guid> invitedUsers)
     {
         var invitesId = await invitesService.CreateInvites(teamId, invitedUsers);
+        
+        if (invitesId.IsError)
+            return Problem(invitesId.FirstError.Description,
+                statusCode: invitesId.FirstError.Type.ToStatusCode());
+        
         await unitOfWork.SaveChangesAsync();
-        return Ok(invitesId);
+        return Ok(invitesId.Value);
     }
 
     [Authorize]
@@ -34,7 +40,12 @@ public class InviteController : ControllerBase
     public async Task<ActionResult<List<InviteResponseDto>>> GetUsersInvite(Guid invitedUserId)
     {
         var invites =  await invitesService.GetInvitesResponse(invitedUserId);
-        return invites.Count != 0 ? Ok(invites) : NotFound();
+        
+        if (invites.IsError)
+            return Problem(invites.FirstError.Description,
+                statusCode: invites.FirstError.Type.ToStatusCode());
+
+        return Ok(invites.Value);
     }
 
     [Authorize]
@@ -42,7 +53,12 @@ public class InviteController : ControllerBase
     public async Task<ActionResult<List<SentInviteDto>>> GetSentInvites(Guid captainId)
     {
         var invites = await invitesService.GetSentInvites(captainId);
-        return invites.Count != 0 ? Ok(invites) : NotFound();
+        
+        if (invites.IsError)
+            return Problem(invites.FirstError.Description,
+                statusCode: invites.FirstError.Type.ToStatusCode());
+        
+        return Ok(invites.Value);
     }
     
     [Authorize]
@@ -50,7 +66,12 @@ public class InviteController : ControllerBase
     public async Task<IActionResult> Accept(Guid inviteId)
     {
         var acceptedInviteId = await invitesService.AcceptInvite(inviteId);
-        return Ok(acceptedInviteId);
+        
+        if (acceptedInviteId.IsError)
+            return Problem(acceptedInviteId.FirstError.Description,
+                statusCode: acceptedInviteId.FirstError.Type.ToStatusCode());
+        
+        return Ok(acceptedInviteId.Value);
     }
 
     [Authorize]
@@ -58,6 +79,11 @@ public class InviteController : ControllerBase
     public async Task<IActionResult> Discard(Guid inviteId)
     {
         var discardedInviteId = await invitesService.DiscardInvite(inviteId);
-        return Ok(discardedInviteId);
+        
+        if (discardedInviteId.IsError)
+            return Problem(discardedInviteId.FirstError.Description,
+                statusCode: discardedInviteId.FirstError.Type.ToStatusCode());
+        
+        return Ok(discardedInviteId.Value);
     }
 }

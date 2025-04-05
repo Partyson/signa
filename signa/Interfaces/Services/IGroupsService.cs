@@ -6,5 +6,5 @@ namespace signa.Interfaces.Services;
 public interface IGroupsService
 {
     Task<ErrorOr<List<Guid>>> CreateGroups(CreateGroupDto createGroupDto);
-    Task<List<GroupResponseDto>> GetGroupsByTournamentId(Guid tournamentId);
+    Task<ErrorOr<List<GroupResponseDto>>> GetGroupsByTournamentId(Guid tournamentId);
 }

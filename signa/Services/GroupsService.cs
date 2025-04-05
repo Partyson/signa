@@ -43,7 +43,7 @@ public class GroupsService : IGroupsService
         return groups.Select(x => x.Id).ToList();
     }
 
-    public async Task<List<GroupResponseDto>> GetGroupsByTournamentId(Guid tournamentId)
+    public async Task<ErrorOr<List<GroupResponseDto>>> GetGroupsByTournamentId(Guid tournamentId)
     {
         var query = groupRepository.MultipleResultQuery()
             .AndFilter(x => x.Tournament.Id == tournamentId)
@@ -52,6 +52,9 @@ public class GroupsService : IGroupsService
                     .ThenInclude(g => g.Matches)
                     .ThenInclude(m => m.Group));
         var groups = await groupRepository.SearchAsync(query);
+
+        if (groups.Count == 0)
+            return Error.NotFound();
         return groups.Select(g => g.Adapt<GroupResponseDto>()).ToList();
     }
 }

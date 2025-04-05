@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.group;
+using signa.Extensions;
 using signa.Interfaces.Services;
 
 namespace signa.Controllers;
@@ -22,8 +23,12 @@ public class GroupController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateGroupDto createGroupDto)
     {
         var groupIds = await groupsService.CreateGroups(createGroupDto);
+
+        if (groupIds.IsError)
+            return Problem(groupIds.FirstError.Description,
+                statusCode: groupIds.FirstError.Type.ToStatusCode());
         await unitOfWork.SaveChangesAsync();
-        return Ok(groupIds);
+        return Ok(groupIds.Value);
     }
 
     [Authorize]
@@ -31,6 +36,10 @@ public class GroupController : ControllerBase
     public async Task<ActionResult<List<GroupResponseDto>>> GetGroupsByTournamentId([FromQuery] Guid tournamentId)
     {
         var groups = await groupsService.GetGroupsByTournamentId(tournamentId);
-        return Ok(groups);
+
+        if (groups.IsError)
+            return Problem(groups.FirstError.Description,  statusCode: groups.FirstError.Type.ToStatusCode());
+            
+        return Ok(groups.Value);
     }
 }

@@ -43,14 +43,24 @@ namespace signa.Controllers
         public async Task<ActionResult<TeamResponseDto>> Get([FromRoute] Guid teamId)
         {
             var teamResponse = await teamsService.GetTeam(teamId);
-            return teamResponse is null ? NotFound() : Ok(teamResponse);
+
+            if (teamResponse.IsError)
+                return Problem(teamResponse.FirstError.Description,
+                    statusCode: teamResponse.FirstError.Type.ToStatusCode());
+            
+            return Ok(teamResponse.Value);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<TeamResponseDto>>> GetTeamsByTournamentId([FromQuery] Guid tournamentId)
         {
             var teams = await teamsService.GetTeamsByTournamentId(tournamentId);
-            return Ok(teams);
+            
+            if (teams.IsError)
+                return Problem(teams.FirstError.Description,
+                    statusCode: teams.FirstError.Type.ToStatusCode());
+            
+            return Ok(teams.Value);
         }
 
         [Authorize]
@@ -58,17 +68,27 @@ namespace signa.Controllers
         public async Task<IActionResult> Update(Guid teamId, [FromBody] UpdateTeamDto team)
         {
             var updatedTeamId = await teamsService.UpdateTeam(teamId, team);
+            
+            if (updatedTeamId.IsError)
+                return Problem(updatedTeamId.FirstError.Description,
+                    statusCode: updatedTeamId.FirstError.Type.ToStatusCode());
+            
             await unitOfWork.SaveChangesAsync();
-            return Ok(updatedTeamId);
+            return Ok(updatedTeamId.Value);
         }
         
         [Authorize(Roles = "Admin,Organizer")]
         [HttpDelete("{teamId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid teamId)
         {
-            await teamsService.DeleteTeam(teamId);
+            var deletedTeamId = await teamsService.DeleteTeam(teamId);
+            
+            if (deletedTeamId.IsError)
+                return Problem(deletedTeamId.FirstError.Description,
+                    statusCode: deletedTeamId.FirstError.Type.ToStatusCode());
+            
             await unitOfWork.SaveChangesAsync();
-            return Ok(teamId);
+            return Ok(deletedTeamId.Value);
         }
     }
 }

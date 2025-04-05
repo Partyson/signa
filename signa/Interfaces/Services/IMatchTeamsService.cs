@@ -1,9 +1,10 @@
 ﻿using signa.Dto.team;
+using ErrorOr;
 
 namespace signa.Interfaces.Services;
 
 public interface IMatchTeamsService
 {
-    Task<Guid> UpdateResult(Guid matchId, List<UpdateTeamScoreDto> newTeamScores);
-    Task<Guid> FinishMatch(Guid matchId);
+    Task<ErrorOr<Guid>> UpdateResult(Guid matchId, List<UpdateTeamScoreDto> newTeamScores);
+    Task<ErrorOr<Guid>> FinishMatch(Guid matchId);
 }
