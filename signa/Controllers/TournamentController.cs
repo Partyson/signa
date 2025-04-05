@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.tournament;
+using signa.Extensions;
 using signa.Interfaces.Services;
 using signa.Validators;
 
@@ -31,14 +32,19 @@ namespace signa.Controllers
             
             var tournamentId = await tournamentsService.CreateTournament(tournament);
             await unitOfWork.SaveChangesAsync();
-            return Ok(tournamentId);
+            return Ok(tournamentId.Value);
         }
         
         [HttpGet("{tournamentId}")]
         public async Task<ActionResult<TournamentInfoDto>> Get([FromRoute] Guid tournamentId)
         {
             var tournamentResponse = await tournamentsService.GetTournamentResponse(tournamentId);
-            return tournamentResponse is null ? NotFound() : Ok(tournamentResponse);
+
+            if (tournamentResponse.IsError)
+                return Problem(tournamentResponse.FirstError.Description,
+                    statusCode: tournamentResponse.FirstError.Type.ToStatusCode());
+            
+            return Ok(tournamentResponse.Value);
         }
 
         [HttpGet("/tournaments")]
@@ -53,17 +59,27 @@ namespace signa.Controllers
         public async Task<IActionResult> Update(Guid tournamentId, [FromBody] UpdateTournamentDto tournament)
         {
             var updatedTournamentId = await tournamentsService.UpdateTournament(tournamentId, tournament);
+            
+            if (updatedTournamentId.IsError)
+                return Problem(updatedTournamentId.FirstError.Description,
+                    statusCode: updatedTournamentId.FirstError.Type.ToStatusCode());
+            
             await unitOfWork.SaveChangesAsync();
-            return Ok(updatedTournamentId);
+            return Ok(updatedTournamentId.Value);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{tournamentId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid tournamentId)
         {
-            await tournamentsService.DeleteTournament(tournamentId);
+            var deletedTournamentId = await tournamentsService.DeleteTournament(tournamentId);
+            
+            if (deletedTournamentId.IsError)
+                return Problem(deletedTournamentId.FirstError.Description,
+                    statusCode: deletedTournamentId.FirstError.Type.ToStatusCode());
+            
             await unitOfWork.SaveChangesAsync();
-            return Ok(tournamentId);
+            return Ok(deletedTournamentId.Value);
         }
     }
 }

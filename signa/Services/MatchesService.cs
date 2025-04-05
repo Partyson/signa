@@ -5,6 +5,7 @@ using signa.Entities;
 using signa.Extensions;
 using signa.Interfaces.Repositories;
 using signa.Interfaces.Services;
+using ErrorOr;
 
 namespace signa.Services;
 
@@ -25,23 +26,29 @@ public class MatchesService : IMatchesService
         this.logger = logger;
     }
 
-    public async Task<List<MatchResponseDto>> GetMatchesByTournamentId(Guid tournamentId)
+    public async Task<ErrorOr<List<MatchResponseDto>>> GetMatchesByTournamentId(Guid tournamentId)
     {
         var query = matchRepository.MultipleResultQuery()
             .Include(x => x.Include(x => x.Teams))
             .AndFilter(x => x.Tournament.Id == tournamentId)
             .AndFilter(x => x.Group == null);
         var matches = await matchRepository.SearchAsync(query);
-        if(matches.Count == 0)
+        if (matches.Count == 0)
+        {
             logger.LogWarning($"No matches found for tournament {tournamentId}");
+            return Error.NotFound("General.NotFound", $"No matches found for tournament {tournamentId}");
+        }
         
         return matches.Select(m => m.Adapt<MatchResponseDto>()).ToList();
     }
 
-    public async Task<List<Guid>> CreateMatchesForTournament(Guid tournamentId)
+    public async Task<ErrorOr<List<Guid>>> CreateMatchesForTournament(Guid tournamentId)
     {
-
         var tournament = await tournamentsService.GetTournament(tournamentId);
+
+        if (tournament.IsError)
+            return tournament.FirstError;
+            
         var matches = Enumerable.Range(0, tournament.Value.Teams.Count - 1)
             .Select(_ => new MatchEntity { Tournament = tournament.Value })
             .ConnectMatches()
@@ -51,7 +58,7 @@ public class MatchesService : IMatchesService
         matches = matches.Concat(groupMatches).ToList();
         await matchRepository.AddRangeAsync(matches);
         
-        logger.LogInformation($"Created {matches.Count} matches  for tournament {tournamentId}");
+        logger.LogInformation($"Created {matches.Count} matches for tournament {tournamentId}");
         return matches.Select(m => m.Id).ToList();
     }
 
@@ -81,19 +88,27 @@ public class MatchesService : IMatchesService
         return groupMatches;
     }
 
-    public async Task<Guid> UpdateResult(Guid matchId, UpdateMatchResultDto updateMatchResultDto)
+    public async Task<ErrorOr<Guid>> UpdateResult(Guid matchId, UpdateMatchResultDto updateMatchResultDto)
     {
         var updatedMatchId = await matchTeamsService.UpdateResult(matchId, updateMatchResultDto.Teams);
+
+        if (updatedMatchId.IsError)
+            return updatedMatchId.FirstError;
+        
         logger.LogInformation($"Updated match results {updatedMatchId}");
-        return updatedMatchId;
+        return updatedMatchId.Value;
     }
     
-    public async Task<List<Guid>> SwapTeams(MatchTeamDto matchTeam1, MatchTeamDto matchTeam2)
+    public async Task<ErrorOr<List<Guid>>> SwapTeams(MatchTeamDto matchTeam1, MatchTeamDto matchTeam2)
     {
         var query = matchRepository.MultipleResultQuery()
             .Include(x => x.Include(x => x.Teams))
             .AndFilter(x => x.Id == matchTeam1.MatchId || x.Id == matchTeam2.MatchId);
         var matches = await matchRepository.SearchAsync(query);
+
+        if (matches.Count == 0)
+            return Error.NotFound("General.NotFound", $"No matches found by ids {matchTeam1.MatchId} and {matchTeam2.MatchId}");
+        
         //TODO нужна консультация как сделать это красивше
         var match1Teams = matches.FirstOrDefault(m => m.Id == matchTeam1.MatchId).Teams;
         var match2Teams = matches.FirstOrDefault(m => m.Id == matchTeam2.MatchId).Teams;
@@ -106,11 +121,15 @@ public class MatchesService : IMatchesService
         return matches.Select(m => m.Id).ToList();
     }
 
-    public async Task<Guid> FinishMatch(Guid matchId)
+    public async Task<ErrorOr<Guid>> FinishMatch(Guid matchId)
     {
         var nextMatchId = await matchTeamsService.FinishMatch(matchId);
+
+        if (nextMatchId.IsError)
+            return nextMatchId.FirstError;
+        
         logger.LogInformation($"Finished match {matchId}. Winner team go to {nextMatchId}");
-        return nextMatchId;
+        return nextMatchId.Value;
     }
 }
 

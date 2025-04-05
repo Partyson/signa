@@ -6,12 +6,12 @@ namespace signa.Interfaces.Services;
 
 public interface ITeamsService
 {
-    Task<TeamResponseDto?> GetTeam(Guid teamId);
-    Task<TeamEntity> GetTeamEntity(Guid teamId);
+    Task<ErrorOr<TeamResponseDto?>> GetTeam(Guid teamId);
+    Task<ErrorOr<TeamEntity>> GetTeamEntity(Guid teamId);
     Task<ErrorOr<List<TeamEntity>>> GetTeamEntitiesByIds(List<Guid> teamIds);
-    Task<TeamEntity> GetTeamEntityByCaptainId(Guid captainId);
-    Task<List<TeamResponseDto>> GetTeamsByTournamentId(Guid tournamentId);
+    Task<ErrorOr<TeamEntity>> GetTeamEntityByCaptainId(Guid captainId);
+    Task<ErrorOr<List<TeamResponseDto>>> GetTeamsByTournamentId(Guid tournamentId);
     Task<ErrorOr<Guid>> CreateTeam(CreateTeamDto newTeam);
-    Task<Guid> UpdateTeam(Guid teamId, UpdateTeamDto updateTeam);
-    Task<Guid> DeleteTeam(Guid teamId);
+    Task<ErrorOr<Guid>> UpdateTeam(Guid teamId, UpdateTeamDto updateTeam);
+    Task<ErrorOr<Guid>> DeleteTeam(Guid teamId);
 }

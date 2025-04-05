@@ -25,7 +25,7 @@ public class TeamsService : ITeamsService
         this.usersService = usersService;
     }
 
-    public async Task<TeamEntity> GetTeamEntity(Guid teamId)
+    public async Task<ErrorOr<TeamEntity>> GetTeamEntity(Guid teamId)
     {
         var query = teamRepository.SingleResultQuery()
             .Include(x => 
@@ -33,6 +33,10 @@ public class TeamsService : ITeamsService
                     .Include(y => y.Captain))
             .AndFilter(x => x.Id == teamId);
         var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
+
+        if (teamEntity == null)
+            return Error.NotFound("General.NotFound", $"Can't find team by id {teamId}");
+        
         return teamEntity;
     }
 
@@ -49,12 +53,12 @@ public class TeamsService : ITeamsService
             var notFoundTeamIds = string.Join(" ", teamIds
                 .Except(teamEntities.Select(x => x.Id).ToList())
                 .Select(x => x.ToString()));
-            Error.NotFound("General.NotFound", $"Not found team: {notFoundTeamIds}");
+            return Error.NotFound("General.NotFound", $"Not found teams: {notFoundTeamIds}");
         }
         return teamEntities.ToList();
     }
     
-    public async Task<TeamEntity> GetTeamEntityByCaptainId(Guid captainId)
+    public async Task<ErrorOr<TeamEntity>> GetTeamEntityByCaptainId(Guid captainId)
     {
         var query = teamRepository.SingleResultQuery()
             .AndFilter(x => x.Captain.Id == captainId)
@@ -62,23 +66,27 @@ public class TeamsService : ITeamsService
                 x.Include(y => y.Invites)
                     .ThenInclude(y => y.InvitedUser));
         var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
+
+        if (teamEntity == null)
+            return Error.NotFound("General.NotFound", $"Can't find team by captain id {captainId}");
+        
         return teamEntity;
     }
 
-    public async Task<TeamResponseDto?> GetTeam(Guid teamId)
+    public async Task<ErrorOr<TeamResponseDto?>> GetTeam(Guid teamId)
     {
         var teamEntity = await GetTeamEntity(teamId);
-        if (teamEntity == null)
+        if (teamEntity.IsError)
         {
-            logger.LogWarning("Team not found from database");
-            return null;
+            logger.LogWarning($"Team {teamId} not found from database");
+            return teamEntity.FirstError;
         }
 
-        logger.LogInformation($"Team {teamEntity.Id} is retrieved from database");
-        return teamEntity.Adapt<TeamResponseDto>();
+        logger.LogInformation($"Team {teamEntity.Value.Id} is retrieved from database");
+        return teamEntity.Value.Adapt<TeamResponseDto>();
     }
 
-    public async Task<List<TeamResponseDto>> GetTeamsByTournamentId(Guid tournamentId)
+    public async Task<ErrorOr<List<TeamResponseDto>>> GetTeamsByTournamentId(Guid tournamentId)
     {
         var query = teamRepository.MultipleResultQuery()
             .Include(x => 
@@ -86,8 +94,13 @@ public class TeamsService : ITeamsService
                     .Include(y => y.Members))
             .AndFilter(x => x.Tournament.Id == tournamentId);
         var teamEntities = await teamRepository.SearchAsync(query);
+        
         if (teamEntities.Count == 0)
-            logger.LogWarning("Tournament don't have any teams");
+        {
+            logger.LogWarning($"Tournament {tournamentId} don't have any teams");
+            return Error.NotFound("General.NotFound", $"Can't find any teams by tournament id {tournamentId}");
+        }
+        
         logger.LogInformation($"Tournament {tournamentId} has {teamEntities.Count} teams");
         var teams = teamEntities.Select(x => x.Adapt<TeamResponseDto>());
         return teams.ToList();
@@ -103,6 +116,7 @@ public class TeamsService : ITeamsService
             return tournament.FirstError;
         if (tournament.Value.MaxTeamsCount != 0 && tournament.Value.MaxTeamsCount < tournament.Value.Teams.Count)
             return Error.Failure("General.Failure", "На турнир больше нет мест.");
+        
         var newTeamEntity = new TeamEntity
         {
             Title = newTeam.Title,
@@ -114,20 +128,28 @@ public class TeamsService : ITeamsService
         return addedTeamEntity.Id;
     }
 
-    public async Task<Guid> UpdateTeam(Guid teamId, UpdateTeamDto updateTeam)
+    public async Task<ErrorOr<Guid>> UpdateTeam(Guid teamId, UpdateTeamDto updateTeam)
     {
         var query = teamRepository.SingleResultQuery().AndFilter(x => x.Id == teamId);
         var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
+
+        if (teamEntity == null)
+            return Error.NotFound("General.NotFound", $"Can't find team by id {teamId}");
+        
         updateTeam.Adapt(teamEntity);
         teamEntity.UpdatedAt = DateTime.Now;
         logger.LogInformation($"Team {teamId} updated");
         return teamId;
     }
 
-    public async Task<Guid> DeleteTeam(Guid teamId)
+    public async Task<ErrorOr<Guid>> DeleteTeam(Guid teamId)
     {
         var query = teamRepository.SingleResultQuery().AndFilter(x => x.Id == teamId);
         var teamEntity = await teamRepository.FirstOrDefaultAsync(query);
+        
+        if (teamEntity == null)
+            return Error.NotFound("General.NotFound", $"Can't find team by id {teamId}");
+        
         teamRepository.Remove(teamEntity);
         logger.LogInformation($"Team {teamId} deleted");
         

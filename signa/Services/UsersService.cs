@@ -24,9 +24,13 @@ public class UsersService : IUsersService
         this.jwtProvider = jwtProvider;
     }
 
-    public async Task<UserResponseDto?> GetUserResponse(Guid userId)
+    public async Task<ErrorOr<UserResponseDto?>> GetUserResponse(Guid userId)
     {
         var user = await GetUser(userId);
+
+        if (user.IsError)
+            return user.FirstError;
+        
         return user.Value.Adapt<UserResponseDto>();
     }
 
@@ -38,7 +42,7 @@ public class UsersService : IUsersService
         var userEntity = await userRepository.FirstOrDefaultAsync(query);
         if (userEntity == null)
         {
-            logger.LogWarning("User not found from database");
+            logger.LogWarning($"User {userId} not found from database");
             return Error.NotFound("General.NotFound", $"User {userId} not found");
         }
 
@@ -46,45 +50,64 @@ public class UsersService : IUsersService
         return userEntity;
     }
 
-    public async Task<List<UserEntity>> GetUserEntitiesByIds(List<Guid> userIds)
+    public async Task<ErrorOr<List<UserEntity>>> GetUserEntitiesByIds(List<Guid> userIds)
     {
         var query = userRepository.MultipleResultQuery()
             .AndFilter(x => userIds.Contains(x.Id));
         var userEntities = await userRepository.SearchAsync(query);
+        var notFoundStr = "";
         if (userEntities.Count < userIds.Count)
             userIds
                 .Except(userEntities.Select(x => x.Id))
-                .ForEach(id => logger.LogWarning($"User {id} has not been found in database"));
-        
+                .ForEach(id => notFoundStr += $"User {id} has not been found in database\n");
+
+        if (!string.IsNullOrEmpty(notFoundStr))
+        {
+            logger.LogWarning(notFoundStr);
+            return Error.NotFound("General.NotFound", notFoundStr);
+        }
+            
         return userEntities.ToList();
     }
 
-    public async Task<List<UserSearchItemDto>> GetUsersByPrefix(string prefix)
+    public async Task<ErrorOr<List<UserSearchItemDto>>> GetUsersByPrefix(string prefix)
     {
         var query = userRepository.MultipleResultQuery()
             .AndFilter(x => x.FullName.Contains(prefix, StringComparison.OrdinalIgnoreCase))
             .OrderBy(x => x.FullName)
             .Page(1, 7);
         var foundedUsers = await userRepository.SearchAsync(query);
+
+        if (foundedUsers.Count == 0)
+            return Error.NotFound("General.NotFound", "No users can be found by provided prefixes");
+        
         return foundedUsers.Select(x => x.Adapt<UserSearchItemDto>()).ToList();
     }
 
 
 
-    public async Task<Guid> UpdateUser(Guid userId, UpdateUserDto updateUser)
+    public async Task<ErrorOr<Guid>> UpdateUser(Guid userId, UpdateUserDto updateUser)
     {
         var query = userRepository.SingleResultQuery().AndFilter(x => x.Id == userId);
         var userEntity = await userRepository.FirstOrDefaultAsync(query);
+
+        if (userEntity == null)
+            return Error.NotFound("General.NotFound", $"User {userId} not found");
+        
         updateUser.Adapt(userEntity);
         userEntity.UpdatedAt = DateTime.Now;
         logger.LogInformation($"User {userId} updated");
         return userId;
     }
 
-    public async Task<Guid> DeleteUser(Guid userId)
+    public async Task<ErrorOr<Guid>> DeleteUser(Guid userId)
     {
         var query = userRepository.SingleResultQuery().AndFilter(x => x.Id == userId);
         var userEntity = await userRepository.FirstOrDefaultAsync(query);
+
+        if (userEntity == null)
+            return Error.NotFound("General.NotFound", $"User {userId} not found");
+        
         userEntity.IsDeleted = true;
         logger.LogInformation($"User {userId} deleted");
         return userId;
