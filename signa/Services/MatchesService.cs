@@ -107,7 +107,7 @@ public class MatchesService : IMatchesService
         var matches = await matchRepository.SearchAsync(query);
 
         if (matches.Count == 0)
-            return Error.NotFound("General.NotFound", $"No matches found by ids {matchTeam1.MatchId} and {matchTeam2.MatchId}");
+            return Error.NotFound("General.NotFound", $"No matches found by ids {matchTeam1.MatchId} or {matchTeam2.MatchId}");
         
         //TODO нужна консультация как сделать это красивше
         var match1Teams = matches.FirstOrDefault(m => m.Id == matchTeam1.MatchId).Teams;

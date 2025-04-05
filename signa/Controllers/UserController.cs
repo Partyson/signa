@@ -43,7 +43,7 @@ namespace signa.Controllers
             return Ok(foundUsers.Value);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{userId}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
         {
