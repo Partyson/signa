@@ -7,6 +7,4 @@ public class CreateTeamDto
     public Guid TournamentId { get; set; }
     
     public Guid CaptainId { get; set; }
-    
-    public List<Guid> MembersId { get; set; }
 }
