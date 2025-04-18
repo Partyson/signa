@@ -60,6 +60,10 @@ namespace signa.Controllers
         {
             var updatedTournamentId = await tournamentsService.UpdateTournament(tournamentId, tournament);
             
+            var validationResult = await validator.ValidateAsync(tournament);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.ToString(Environment.NewLine));
+            
             if (updatedTournamentId.IsError)
                 return Problem(updatedTournamentId.FirstError.Description,
                     statusCode: updatedTournamentId.FirstError.Type.ToStatusCode());
