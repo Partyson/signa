@@ -8,6 +8,7 @@ using signa.Interfaces.Services;
 namespace signa.Controllers
 {
     [ApiController]
+    [Route("user")]
     public class UserController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
@@ -19,8 +20,8 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<UserResponseDto>> Get(Guid userId)
+        [HttpGet("get/{userId}")]
+        public async Task<ActionResult<UserResponseDto>> Get([FromRoute] Guid userId)
         {
             var userResponseDto = await usersService.GetUserResponse(userId);
 
@@ -44,8 +45,8 @@ namespace signa.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPatch("{userId}")]
-        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
+        [HttpPatch("{userId}/update")]
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] UpdateUserDto user)
         {
             var id = await usersService.UpdateUser(userId, user);
             
@@ -57,8 +58,8 @@ namespace signa.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> DeleteUser(Guid userId)
+        [HttpDelete("{userId}/delete")]
+        public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
         {
             var deletedUserId = await usersService.DeleteUser(userId);
             

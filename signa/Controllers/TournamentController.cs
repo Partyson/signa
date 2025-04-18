@@ -23,7 +23,7 @@ namespace signa.Controllers
             validator = tournamentValidator;
         }
         [Authorize(Roles = "Admin,Organizer")]
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateTournamentDto tournament)
         {
             var validationResult = await validator.ValidateAsync(tournament);
@@ -47,7 +47,7 @@ namespace signa.Controllers
             return Ok(tournamentResponse.Value);
         }
 
-        [HttpGet("/tournaments")]
+        [HttpGet]
         public async Task<ActionResult<List<TournamentListItemDto>>> GetAll()
         {
             var tournaments = await tournamentsService.GetAllTournaments();
@@ -55,8 +55,8 @@ namespace signa.Controllers
         }
 
         [Authorize(Roles = "Admin,Organizer")]
-        [HttpPatch("{tournamentId}")]
-        public async Task<IActionResult> Update(Guid tournamentId, [FromBody] UpdateTournamentDto tournament)
+        [HttpPatch("{tournamentId}/update")]
+        public async Task<IActionResult> Update([FromRoute] Guid tournamentId, [FromBody] UpdateTournamentDto tournament)
         {
             var updatedTournamentId = await tournamentsService.UpdateTournament(tournamentId, tournament);
             
@@ -69,7 +69,7 @@ namespace signa.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{tournamentId}")]
+        [HttpDelete("{tournamentId}/delete")]
         public async Task<IActionResult> Delete([FromRoute] Guid tournamentId)
         {
             var deletedTournamentId = await tournamentsService.DeleteTournament(tournamentId);
