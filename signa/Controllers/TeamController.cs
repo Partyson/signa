@@ -63,7 +63,7 @@ namespace signa.Controllers
             return Ok(teams.Value);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,Organizer")]
         [HttpPatch("{teamId}")]
         public async Task<IActionResult> Update(Guid teamId, [FromBody] UpdateTeamDto team)
         {
