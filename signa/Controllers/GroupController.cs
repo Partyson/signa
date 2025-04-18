@@ -7,6 +7,8 @@ using signa.Interfaces.Services;
 
 namespace signa.Controllers;
 
+[ApiController]
+[Route("group")]
 public class GroupController : ControllerBase
 {
     private readonly IGroupsService groupsService;
@@ -19,7 +21,7 @@ public class GroupController : ControllerBase
     }
 
     [Authorize(Roles = "Admin,Organizer")]
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] CreateGroupDto createGroupDto)
     {
         var groupIds = await groupsService.CreateGroups(createGroupDto);

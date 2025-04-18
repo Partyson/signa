@@ -8,6 +8,7 @@ using signa.Interfaces.Services;
 
 namespace signa.Controllers;
 
+[ApiController]
 [Route("invites")]
 public class InviteController : ControllerBase
 {
@@ -22,8 +23,8 @@ public class InviteController : ControllerBase
     }
     
     [Authorize]
-    [HttpPost("{teamId}")]
-    public async Task<IActionResult> Create(Guid teamId, [FromBody] List<Guid> invitedUsers)
+    [HttpPost("{teamId}/create")]
+    public async Task<IActionResult> Create([FromRoute] Guid teamId, [FromBody] List<Guid> invitedUsers)
     {
         var invitesId = await invitesService.CreateInvites(teamId, invitedUsers);
         
@@ -37,7 +38,7 @@ public class InviteController : ControllerBase
 
     [Authorize]
     [HttpGet("{invitedUserId}")]
-    public async Task<ActionResult<List<InviteResponseDto>>> GetUsersInvite(Guid invitedUserId)
+    public async Task<ActionResult<List<InviteResponseDto>>> GetUsersInvite([FromRoute] Guid invitedUserId)
     {
         var invites =  await invitesService.GetInvitesResponse(invitedUserId);
         
@@ -50,7 +51,7 @@ public class InviteController : ControllerBase
 
     [Authorize]
     [HttpGet("{captainId}/sent")]
-    public async Task<ActionResult<List<SentInviteDto>>> GetSentInvites(Guid captainId)
+    public async Task<ActionResult<List<SentInviteDto>>> GetSentInvites([FromRoute] Guid captainId)
     {
         var invites = await invitesService.GetSentInvites(captainId);
         
@@ -63,7 +64,7 @@ public class InviteController : ControllerBase
     
     [Authorize]
     [HttpPatch("{inviteId}/accept")]
-    public async Task<IActionResult> Accept(Guid inviteId)
+    public async Task<IActionResult> Accept([FromRoute] Guid inviteId)
     {
         var acceptedInviteId = await invitesService.AcceptInvite(inviteId);
         
@@ -76,7 +77,7 @@ public class InviteController : ControllerBase
 
     [Authorize]
     [HttpPatch("{inviteId}/discard")]
-    public async Task<IActionResult> Discard(Guid inviteId)
+    public async Task<IActionResult> Discard([FromRoute] Guid inviteId)
     {
         var discardedInviteId = await invitesService.DiscardInvite(inviteId);
         

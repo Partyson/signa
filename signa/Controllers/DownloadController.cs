@@ -5,6 +5,8 @@ using signa.Interfaces.Services;
 
 namespace signa.Controllers;
 
+[ApiController]
+[Route("download")]
 public class DownloadController : ControllerBase
 {
     private readonly IDownloadsService downloadsService;
@@ -16,7 +18,7 @@ public class DownloadController : ControllerBase
 
     [Authorize(Roles = "Admin,Organizer")]
     [HttpGet]
-    [Route("download/user/{tournamentId}")]
+    [Route("user/{tournamentId}")]
     public async Task<IActionResult> DownloadPlayersByTournament(Guid tournamentId)
     {
         var docxContent = await downloadsService.DownloadTournamentPlayers(tournamentId);

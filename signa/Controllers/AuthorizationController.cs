@@ -10,6 +10,7 @@ using IAuthorizationService = signa.Interfaces.Services.IAuthorizationService;
 namespace signa.Controllers;
 
 [ApiController]
+[Route("auth")]
 public class AuthorizationController : ControllerBase
 {
     private readonly IAuthorizationService authorizationService;
