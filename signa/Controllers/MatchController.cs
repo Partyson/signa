@@ -22,7 +22,7 @@ namespace signa.Controllers
         }
         
         [Authorize(Roles = "Admin,Organizer")]
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult> CreateForTournament([FromQuery] Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
@@ -49,7 +49,7 @@ namespace signa.Controllers
         }
 
         [Authorize(Roles = "Admin,Organizer")]
-        [HttpPatch]
+        [HttpPatch("update")]
         public async Task<ActionResult> UpdateMatchResult([FromQuery] Guid matchId,
             [FromBody] UpdateMatchResultDto updateMatchResultDto)
         {
@@ -77,7 +77,7 @@ namespace signa.Controllers
         }
 
         [Authorize(Roles = "Admin,Organizer")]
-        [HttpPost("{matchId}")]
+        [HttpPost("{matchId}/finish")]
         public async Task<ActionResult> FinishMatch([FromRoute] Guid matchId)
         {
             var nextMatchId = await matchesService.FinishMatch(matchId);

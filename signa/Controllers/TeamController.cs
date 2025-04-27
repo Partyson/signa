@@ -26,7 +26,7 @@ namespace signa.Controllers
         }
         
         [Authorize]
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateTeamDto team)
         {
             var validationResult = await validator.ValidateAsync(team);
@@ -51,7 +51,7 @@ namespace signa.Controllers
             return Ok(teamResponse.Value);
         }
 
-        [HttpGet]
+        [HttpGet("get-teams")]
         public async Task<ActionResult<List<TeamResponseDto>>> GetTeamsByTournamentId([FromQuery] Guid tournamentId)
         {
             var teams = await teamsService.GetTeamsByTournamentId(tournamentId);
@@ -64,7 +64,7 @@ namespace signa.Controllers
         }
 
         [Authorize]
-        [HttpPatch("{teamId}")]
+        [HttpPatch("{teamId}/update")]
         public async Task<IActionResult> Update(Guid teamId, [FromBody] UpdateTeamDto team)
         {
             var updatedTeamId = await teamsService.UpdateTeam(teamId, team);
@@ -78,7 +78,7 @@ namespace signa.Controllers
         }
         
         [Authorize(Roles = "Admin,Organizer")]
-        [HttpDelete("{teamId}")]
+        [HttpDelete("{teamId}/delete")]
         public async Task<IActionResult> Delete([FromRoute] Guid teamId)
         {
             var deletedTeamId = await teamsService.DeleteTeam(teamId);
