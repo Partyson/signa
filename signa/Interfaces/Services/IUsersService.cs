@@ -11,6 +11,7 @@ public interface IUsersService
     Task<ErrorOr<List<UserEntity>>> GetUserEntitiesByIds(List<Guid> userIds);
     Task<ErrorOr<List<UserSearchItemDto>>> GetUsersByPrefix(string prefix);
     Task<ErrorOr<Guid>> UpdateUser(Guid userId, UpdateUserDto updateUser);
+    Task<ErrorOr<Guid>> UpdateUserPass(Guid userId, UpdateUserPassDto updateUser);
     Task<ErrorOr<Guid>> DeleteUser(Guid userId);
 
 }

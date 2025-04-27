@@ -1,9 +1,11 @@
+using System.Security.Claims;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using signa.Dto.user;
 using signa.Extensions;
 using signa.Interfaces.Services;
+using signa.Validators;
 
 namespace signa.Controllers
 {
@@ -12,11 +14,13 @@ namespace signa.Controllers
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IUsersService usersService;
+        private readonly UserPassValidator userPassValidator;
 
-        public UserController(IUsersService usersService, IUnitOfWork unitOfWork)
+        public UserController(IUsersService usersService, IUnitOfWork unitOfWork, UserPassValidator userPassValidator)
         {
             this.usersService = usersService;
             this.unitOfWork = unitOfWork;
+            this.userPassValidator = userPassValidator;
         }
 
         [HttpGet("{userId}")]
@@ -48,6 +52,30 @@ namespace signa.Controllers
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto user)
         {
             var id = await usersService.UpdateUser(userId, user);
+            
+            if (id.IsError)
+                return Problem(id.FirstError.Description, statusCode: id.FirstError.Type.ToStatusCode());
+            
+            await unitOfWork.SaveChangesAsync();
+            return Ok(id.Value);
+        }
+        
+        [Authorize]
+        [HttpPatch("change-password")]
+        public async Task<IActionResult> UpdateUserPass([FromBody] UpdateUserPassDto user)
+        {
+            var validationResult = await userPassValidator.ValidateAsync(user);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.ToString(Environment.NewLine));
+                
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserIdClaim == null)
+                return Problem("Невозможно определить ваш ID.", statusCode: StatusCodes.Status401Unauthorized);
+
+            if (!Guid.TryParse(currentUserIdClaim, out var currentUserId))
+                return Problem("Неверный токен или ID пользователя.", statusCode: StatusCodes.Status401Unauthorized);
+            
+            var id = await usersService.UpdateUserPass(currentUserId, user);
             
             if (id.IsError)
                 return Problem(id.FirstError.Description, statusCode: id.FirstError.Type.ToStatusCode());

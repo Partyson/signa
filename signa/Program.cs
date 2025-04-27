@@ -52,6 +52,7 @@ public static class Program
         builder.Services.AddScoped<UserValidator>();
         builder.Services.AddScoped<TournamentValidator>();
         builder.Services.AddScoped<TeamValidator>();
+        builder.Services.AddScoped<UserPassValidator>();
 
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
