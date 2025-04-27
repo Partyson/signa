@@ -10,13 +10,13 @@ using ErrorOr;
 
 namespace signa.Services;
 
-public class InvitesesService : IInvitesService
+public class InvitesService : IInvitesService
 {
     private readonly IInviteRepository inviteRepository;
     private readonly ITeamsService teamsService;
     private readonly IUsersService usersService;
 
-    public InvitesesService(IInviteRepository inviteRepository, ITeamsService teamsService, IUsersService usersService)
+    public InvitesService(IInviteRepository inviteRepository, ITeamsService teamsService, IUsersService usersService)
     {
         this.inviteRepository = inviteRepository;
         this.teamsService = teamsService;
@@ -48,12 +48,15 @@ public class InvitesesService : IInvitesService
         return team.Value.Invites.Select(x => x.Adapt<SentInviteDto>()).ToList();
     }
 
-    public async Task<ErrorOr<List<Guid>>> CreateInvites(Guid teamId, List<Guid> invitedUserIds)
+    public async Task<ErrorOr<List<Guid>>> CreateInvites(Guid teamId, List<Guid> invitedUserIds, Guid currentUserId)
     {
         var teamEntity = await teamsService.GetTeamEntity(teamId);
         
         if (teamEntity.IsError)
             return teamEntity.FirstError;
+        
+        if (teamEntity.Value.Captain.Id != currentUserId)
+            return Error.Forbidden("General.Forbidden", "Только капитан команды может высылать инвайты.");
         
         var invitedUsers = await usersService.GetUserEntitiesByIds(invitedUserIds);
 
@@ -66,14 +69,17 @@ public class InvitesesService : IInvitesService
         return invites.Select(x => x.Id).ToList();
     }
 
-    public async Task<ErrorOr<Guid>> AcceptInvite(Guid inviteId)
+    public async Task<ErrorOr<Guid>> AcceptInvite(Guid inviteId, Guid currentUserId)
     {
         var query = inviteRepository.SingleResultQuery()
             .AndFilter(x => x.Id == inviteId);
         var inviteEntity = await inviteRepository.FirstOrDefaultAsync(query);
 
         if (inviteEntity == null)
-            return Error.NotFound("General.NotFound",$"Can't find invite by id {inviteId}");
+            return Error.NotFound("General.NotFound",$"Инвайт {inviteId} не найден");
+        
+        if (inviteEntity.InvitedUser?.Id != currentUserId)
+            return Error.Forbidden("General.Forbidden", "Только адресат может принять инвайт.");
         
         inviteEntity.State = InviteState.Accepted;
         inviteEntity.UpdatedAt = DateTime.Now;
@@ -81,7 +87,7 @@ public class InvitesesService : IInvitesService
         return inviteEntity.Id;
     }
 
-    public async Task<ErrorOr<Guid>> DiscardInvite(Guid inviteId)
+    public async Task<ErrorOr<Guid>> DiscardInvite(Guid inviteId, Guid currentUserId)
     {
         var query = inviteRepository.SingleResultQuery()
             .AndFilter(x => x.Id == inviteId);
@@ -90,8 +96,12 @@ public class InvitesesService : IInvitesService
         if (inviteEntity == null)
             return Error.NotFound("General.NotFound", $"Can't find invite by id {inviteId}"); 
         
+        if (inviteEntity.InvitedUser.Id != currentUserId)
+            return Error.Forbidden("General.Forbidden", "Только адресат может отклонить приглашение");
+        
         inviteEntity.State = InviteState.Discarded;
         inviteEntity.UpdatedAt = DateTime.Now;
+        
         return inviteEntity.Id;
     }
 }

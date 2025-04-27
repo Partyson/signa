@@ -20,7 +20,7 @@ public class MappingConfig
             .NewConfig()
             .Map(dest => dest.PasswordHash, src => PasswordHasher.HashPassword(src.Password, salt))
             .Map(dest => dest.PasswordSalt, src => Convert.ToBase64String(salt));
-        TypeAdapterConfig<UpdateUserDto, UserEntity>
+        TypeAdapterConfig<UpdateUserPassDto, UserEntity>
             .NewConfig()
             .Map(dest => dest.PasswordHash, src => PasswordHasher.HashPassword(src.Password, salt))
             .Map(dest => dest.PasswordSalt, src => Convert.ToBase64String(salt));
