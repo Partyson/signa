@@ -97,7 +97,7 @@ public class InvitesService : IInvitesService
             return Error.NotFound("General.NotFound", $"Can't find invite by id {inviteId}"); 
         
         if (inviteEntity.InvitedUser.Id != currentUserId)
-            return Error.Forbidden("Invites.Forbidden", "Только адресат может отклонить приглашение");
+            return Error.Forbidden("General.Forbidden", "Только адресат может отклонить приглашение");
         
         inviteEntity.State = InviteState.Discarded;
         inviteEntity.UpdatedAt = DateTime.Now;
