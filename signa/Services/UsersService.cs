@@ -79,7 +79,7 @@ public class UsersService : IUsersService
         var foundedUsers = await userRepository.SearchAsync(query);
 
         if (foundedUsers.Count == 0)
-            return Error.NotFound("General.NotFound", "No users can be found by provided prefixes");
+            return Error.NotFound("General.NotFound", "Не найдено ни одного пользователя с указанным префиксом.");
         
         return foundedUsers.Select(x => x.Adapt<UserSearchItemDto>()).ToList();
     }
@@ -100,12 +100,27 @@ public class UsersService : IUsersService
         return userId;
     }
 
-    public async Task<ErrorOr<Guid>> DeleteUser(Guid userId)
+    public async Task<ErrorOr<Guid>> UpdateUserPass(Guid userId, UpdateUserPassDto updateUser)
     {
         var query = userRepository.SingleResultQuery().AndFilter(x => x.Id == userId);
         var userEntity = await userRepository.FirstOrDefaultAsync(query);
 
         if (userEntity == null)
+            return Error.NotFound("General.NotFound", $"User {userId} not found");
+        
+        updateUser.Adapt(userEntity);
+        userEntity.UpdatedAt = DateTime.Now;
+        logger.LogInformation($"User {userId} updated his password");
+        
+        return userId;
+    }
+
+    public async Task<ErrorOr<Guid>> DeleteUser(Guid userId)
+    {
+        var query = userRepository.SingleResultQuery().AndFilter(x => x.Id == userId);
+        var userEntity = await userRepository.FirstOrDefaultAsync(query);
+
+        if (userEntity == null || userEntity.IsDeleted)
             return Error.NotFound("General.NotFound", $"User {userId} not found");
         
         userEntity.IsDeleted = true;
