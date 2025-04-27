@@ -9,7 +9,7 @@ public interface IInvitesService
     Task<ErrorOr<List<InviteResponseDto>>> GetInvitesResponse(Guid invitedUserId);
     
     Task<ErrorOr<List<SentInviteDto>>> GetSentInvites(Guid captainId);
-    Task<ErrorOr<List<Guid>>> CreateInvites(Guid teamId, List<Guid> invitedUsers);
-    Task<ErrorOr<Guid>> AcceptInvite(Guid inviteId);
-    Task<ErrorOr<Guid>> DiscardInvite(Guid inviteId);
+    Task<ErrorOr<List<Guid>>> CreateInvites(Guid teamId, List<Guid> invitedUsers, Guid currentUserId);
+    Task<ErrorOr<Guid>> AcceptInvite(Guid inviteId, Guid currentUserId);
+    Task<ErrorOr<Guid>> DiscardInvite(Guid inviteId, Guid currentUserId);
 }

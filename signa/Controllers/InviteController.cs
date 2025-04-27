@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using signa.Dto.invite;
 using signa.Enums;
 using signa.Extensions;
+using signa.Interfaces.Repositories;
 using signa.Interfaces.Services;
 
 namespace signa.Controllers;
@@ -26,7 +27,13 @@ public class InviteController : ControllerBase
     [HttpPost("{teamId}/create")]
     public async Task<IActionResult> Create([FromRoute] Guid teamId, [FromBody] List<Guid> invitedUsers)
     {
-        var invitesId = await invitesService.CreateInvites(teamId, invitedUsers);
+        var currentUserId = User.GetUserId();
+
+        if (currentUserId.IsError)
+            return Problem(currentUserId.FirstError.Description,
+                statusCode: currentUserId.FirstError.Type.ToStatusCode());
+        
+        var invitesId = await invitesService.CreateInvites(teamId, invitedUsers, currentUserId.Value);
         
         if (invitesId.IsError)
             return Problem(invitesId.FirstError.Description,
@@ -40,6 +47,15 @@ public class InviteController : ControllerBase
     [HttpGet("{invitedUserId}")]
     public async Task<ActionResult<List<InviteResponseDto>>> GetUsersInvite([FromRoute] Guid invitedUserId)
     {
+        var currentUserId = User.GetUserId();
+        
+        if (currentUserId.IsError)
+            return Problem(currentUserId.FirstError.Description,
+                statusCode: currentUserId.FirstError.Type.ToStatusCode());
+        
+        if (currentUserId.Value != invitedUserId)
+            return Problem("Нельзя получить инвайты другого пользователя.", statusCode: StatusCodes.Status403Forbidden);
+        
         var invites =  await invitesService.GetInvitesResponse(invitedUserId);
         
         if (invites.IsError)
@@ -53,6 +69,15 @@ public class InviteController : ControllerBase
     [HttpGet("{captainId}/sent")]
     public async Task<ActionResult<List<SentInviteDto>>> GetSentInvites([FromRoute] Guid captainId)
     {
+        var currentUserId = User.GetUserId();
+        
+        if (currentUserId.IsError)
+            return Problem(currentUserId.FirstError.Description,
+                statusCode: currentUserId.FirstError.Type.ToStatusCode());
+        
+        if (currentUserId.Value != captainId)
+            return Problem("Нельзя получить отправленные инвайты если вы не капитан.", statusCode: StatusCodes.Status403Forbidden);
+        
         var invites = await invitesService.GetSentInvites(captainId);
         
         if (invites.IsError)
@@ -66,7 +91,13 @@ public class InviteController : ControllerBase
     [HttpPatch("{inviteId}/accept")]
     public async Task<IActionResult> Accept([FromRoute] Guid inviteId)
     {
-        var acceptedInviteId = await invitesService.AcceptInvite(inviteId);
+        var currentUserId = User.GetUserId();
+        
+        if (currentUserId.IsError)
+            return Problem(currentUserId.FirstError.Description,
+                statusCode: currentUserId.FirstError.Type.ToStatusCode());
+        
+        var acceptedInviteId = await invitesService.AcceptInvite(inviteId, currentUserId.Value);
         
         if (acceptedInviteId.IsError)
             return Problem(acceptedInviteId.FirstError.Description,
@@ -79,7 +110,13 @@ public class InviteController : ControllerBase
     [HttpPatch("{inviteId}/discard")]
     public async Task<IActionResult> Discard([FromRoute] Guid inviteId)
     {
-        var discardedInviteId = await invitesService.DiscardInvite(inviteId);
+        var currentUserId = User.GetUserId();
+        
+        if (currentUserId.IsError)
+            return Problem(currentUserId.FirstError.Description,
+                statusCode: currentUserId.FirstError.Type.ToStatusCode());
+        
+        var discardedInviteId = await invitesService.DiscardInvite(inviteId, currentUserId.Value);
         
         if (discardedInviteId.IsError)
             return Problem(discardedInviteId.FirstError.Description,
