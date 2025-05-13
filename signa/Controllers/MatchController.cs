@@ -21,16 +21,15 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
-        [Authorize(Roles = "Admin,Organizer")]
-        [HttpPost("create")]
-        public async Task<ActionResult> CreateForTournament([FromQuery] Guid tournamentId)
+        [Authorize(Roles = "Admin,Organizer")] 
+        public async Task<ActionResult> CreateForTournament(Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
-            
+
             if (matchesId.IsError)
                 return Problem(matchesId.FirstError.Description,
                     statusCode: matchesId.FirstError.Type.ToStatusCode());
-            
+
             await unitOfWork.SaveChangesAsync();
             return Ok(matchesId.Value);
         }

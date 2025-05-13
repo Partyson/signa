@@ -13,128 +13,134 @@ using signa.Repositories;
 using signa.Services;
 using signa.Validators;
 using Microsoft.AspNetCore.CookiePolicy;
+using Quartz;
+using Quartz.Impl;
+using signa.Jobs;
 
-namespace signa;
+var builder = WebApplication.CreateBuilder(args);
 
-public static class Program
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File($"logs/log_{DateTime.Now:yy-MM-dd-HH-mm}.txt",
+        outputTemplate:
+        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
+
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
+builder.Services.AddScoped<ITournamentsService, TournamentsService>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<ITeamsService, TeamsService>();
+builder.Services.AddScoped<IMatchRepository, MatchRepository>();
+builder.Services.AddScoped<IMatchesService, MatchesService>();
+builder.Services.AddScoped<IMatchTeamsService, MatchTeamsService>();
+builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+builder.Services.AddScoped<IInvitesService, InvitesService>();
+builder.Services.AddScoped<IInviteRepository, InviteRepository>();
+builder.Services.AddScoped<IGroupsService, GroupsService>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IDownloadsService, DownloadsService>();
+builder.Services.AddScoped<UserValidator>();
+builder.Services.AddScoped<TournamentValidator>();
+builder.Services.AddScoped<TeamValidator>();
+builder.Services.AddScoped<UserPassValidator>();
+builder.Services.AddScoped<MatchesJob>();
+
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+builder.Services.AddControllers()
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+
+MappingConfig.RegisterMappings();
+builder.Services.AddQuartz(q =>
 {
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
+    var jobKey = new JobKey("MatchesJob");
+    q.AddJob<MatchesJob>(opts => opts.WithIdentity(jobKey));
 
-        Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .WriteTo.Console(
-                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}")
-            .WriteTo.File($"logs/log_{DateTime.Now:yy-MM-dd-HH-mm}.txt",
-                outputTemplate:
-                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}")
-            .CreateLogger();
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("MatchesJob-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
+    );
+});
 
-        builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IUsersService, UsersService>();
-        builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
-        builder.Services.AddScoped<ITournamentsService, TournamentsService>();
-        builder.Services.AddScoped<ITeamRepository, TeamRepository>();
-        builder.Services.AddScoped<ITeamsService, TeamsService>();
-        builder.Services.AddScoped<IMatchRepository, MatchRepository>();
-        builder.Services.AddScoped<IMatchesService, MatchesService>();
-        builder.Services.AddScoped<IMatchTeamsService, MatchTeamsService>();
-        builder.Services.AddScoped<IMatchTeamRepository, MatchTeamRepository>();
-        builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
-        builder.Services.AddScoped<IInvitesService, InvitesService>();
-        builder.Services.AddScoped<IInviteRepository, InviteRepository>();
-        builder.Services.AddScoped<IGroupsService, GroupsService>();
-        builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-        builder.Services.AddScoped<IDownloadsService, DownloadsService>();
-        builder.Services.AddScoped<UserValidator>();
-        builder.Services.AddScoped<TournamentValidator>();
-        builder.Services.AddScoped<TeamValidator>();
-        builder.Services.AddScoped<UserPassValidator>();
-
-        builder.Services.AddScoped<IJwtProvider, JwtProvider>();
-
-        builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
-        builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
-
-        MappingConfig.RegisterMappings();
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+            ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
+            optionsBuilder => optionsBuilder.EnableStringComparisonTranslations())
+        .EnableSensitiveDataLogging()
+        .UseLoggerFactory(LoggerFactory.Create(logging =>
         {
-            options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-                    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
-                    optionsBuilder => optionsBuilder.EnableStringComparisonTranslations())
-                .EnableSensitiveDataLogging()
-                .UseLoggerFactory(LoggerFactory.Create(logging =>
-                {
-                    logging.AddConsole();
-                    logging.AddDebug();
-                }));
-        });
-        builder.Services.AddScoped<DbContext>(provider => provider.GetService<ApplicationDbContext>()!);
-        builder.Services.AddUnitOfWork();
-        builder.Services.AddUnitOfWork<ApplicationDbContext>();
+            logging.AddConsole();
+            logging.AddDebug();
+        }));
+});
+builder.Services.AddScoped<DbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+builder.Services.AddUnitOfWork();
+builder.Services.AddUnitOfWork<ApplicationDbContext>();
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey("supermegasigmaultrapupersecretkey"u8.ToArray())
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey("supermegasigmaultrapupersecretkey"u8.ToArray())
-                };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies["token"];
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                context.Token = context.Request.Cookies["token"];
+                return Task.CompletedTask;
+            }
+        };
+    });
 
-        builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
-        var app = builder.Build();
+var app = builder.Build();
 
-        using var scope = app.Services.CreateScope();
-        using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
+using var scope = app.Services.CreateScope();
+using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+context.Database.Migrate();
 // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment() || builder.Environment.EnvironmentName == "Docker")
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.UseCors(x => x.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-
-        app.UseCookiePolicy(new CookiePolicyOptions
-        {
-            MinimumSameSitePolicy = SameSiteMode.Strict,
-            HttpOnly = HttpOnlyPolicy.Always,
-            Secure = CookieSecurePolicy.None
-        });
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-
-        app.Run();
-    }
+if (app.Environment.IsDevelopment() || builder.Environment.EnvironmentName == "Docker")
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseCors(x => x.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict,
+    HttpOnly = HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.None
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
