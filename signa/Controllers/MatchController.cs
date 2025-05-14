@@ -21,7 +21,8 @@ namespace signa.Controllers
             this.unitOfWork = unitOfWork;
         }
         
-        [Authorize(Roles = "Admin,Organizer")] 
+        /* SAY-194 не вытаскиваем метод наружу
+        [Authorize(Roles = "Admin,Organizer")]
         public async Task<ActionResult> CreateForTournament(Guid tournamentId)
         {
             var matchesId = await matchesService.CreateMatchesForTournament(tournamentId);
@@ -33,6 +34,7 @@ namespace signa.Controllers
             await unitOfWork.SaveChangesAsync();
             return Ok(matchesId.Value);
         }
+        */
 
         [Authorize]
         [HttpGet]

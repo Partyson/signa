@@ -39,7 +39,7 @@ public class MatchesService : IMatchesService
             return Error.NotFound("General.NotFound", $"No matches found for tournament {tournamentId}");
         }
         
-        return matches.Select(m => m.Adapt<MatchResponseDto>()).ToList(); // TODO: тут ошибка если матчи найдены
+        return matches.Select(m => m.Adapt<MatchResponseDto>()).ToList();
     }
 
     public async Task<ErrorOr<List<Guid>>> CreateMatchesForTournament(Guid tournamentId)

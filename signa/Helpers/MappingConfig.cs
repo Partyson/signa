@@ -42,13 +42,10 @@ public class MappingConfig
             .NewConfig()
             .Map(dest => dest.NextMatchId, src => src.NextMatch == null ? Guid.Empty : src.NextMatch.Id)
             .Map(dest => dest.Teams,
-                src => src.Teams.Count == 0 ? new List<TeamInMatchResponseDto>() :
-                new List<TeamInMatchResponseDto>
-                    {
-                        CreateTeamInMatchDto(src, src.Teams[0]),
-                        CreateTeamInMatchDto(src, src.Teams[1])
-                    }
-                );
+                src => src.Teams
+                    .Select(team => CreateTeamInMatchDto(src, team))
+                    .ToList()
+            );
         
         TypeAdapterConfig<TournamentEntity, TournamentInfoDto>
             .NewConfig()
