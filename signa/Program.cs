@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Amazon.S3;
 using EntityFrameworkCore.UnitOfWork.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -106,7 +107,18 @@ public static class Program
                     }
                 };
             });
-
+        
+        var bucketAccessKey = builder.Configuration.GetValue<string>("YcStorage:AccessKey");
+        var bucketSecretKey = builder.Configuration.GetValue<string>("YcStorage:SecretKey");
+            
+        var s3Config = new AmazonS3Config
+        {
+            ServiceURL = "https://s3.yandexcloud.net",
+            ForcePathStyle = true
+        };
+        
+        builder.Services.AddSingleton<IAmazonS3>(new AmazonS3Client(bucketAccessKey, bucketSecretKey, s3Config));
+        
         builder.Services.AddAuthorization();
 
         var app = builder.Build();
@@ -121,7 +133,7 @@ public static class Program
             app.UseSwaggerUI();
         }
 
-        app.UseCors(x => x.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+        app.UseCors(x => x.WithOrigins("http://localhost:3000", "http://localhost:5000", "https://s3.yandexcloud.net").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
         app.UseCookiePolicy(new CookiePolicyOptions
         {

@@ -2,28 +2,6 @@
   db_data:
 
 services:
-  mysql:
-    container_name: mysql_db
-    image: mysql:8.0.22
-    restart: always
-    environment:
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: 111
-      MYSQL_DATABASE: application_db
-      MYSQL_USER: dbuser
-      MYSQL_PASSWORD: 111
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p111 || exit 1"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-    networks:
-      - app_network
-
   backend:
     container_name: backend_service
     build:
@@ -31,25 +9,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
     volumes:
       - ./signa/appsettings.Docker.json:/app/appsettings.Docker.json
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-    networks:
-      - app_network
-
-  frontend:
-    container_name: frontend_service
-    build:
-      context: ./signa-front
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
     networks:
       - app_network
 
